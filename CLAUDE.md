@@ -6,7 +6,7 @@ Portfolio web generico per artisti professionisti: un sito pubblico personalizza
 1. `docs/PLAN.md`: decisioni prese (§1), layout scelto (§2), architettura (§3), regole di lavoro (§4), milestone (§5).
 2. `docs/PROGRESS.md`: ultima voce, cioè dove ci si è fermati e qual è il prossimo passo.
 3. Lavora in **modalità autopilota** (PLAN §4): esegui tutte le milestone da M1 a M9 senza fermarti a chiedere, testando dopo ogni task e con un gate di verifica a fine milestone. Alla fine apri **una sola PR verso `main`**.
-4. Un hook di Stop (`.claude/hooks/autopilot-stop.sh`) ti rimanda al lavoro finché in PLAN restano task aperti. Non disattivarlo. Se sei davvero bloccato, crea `docs/BLOCKED.md`.
+4. Un hook di Stop (`.claude/hooks/autopilot-stop.sh`) ti rimanda al lavoro finché in PLAN restano task aperti. Non disattivarlo. **A inizio sessione cloud crea il file `.claude/autopilot.on`** (escluso da git): attiva l'hook anche se l'ambiente non imposta `CLAUDE_CODE_REMOTE`. Se sei davvero bloccato, crea `docs/BLOCKED.md`.
 
 ## Stack
 Next.js (App Router) + Payload CMS 3 (admin su `/admin`) · PostgreSQL 17 · TypeScript strict · pnpm · Node 24 LTS · Docker / Compose (TLS gestito esternamente) · Vitest + Playwright · GitHub Actions.
