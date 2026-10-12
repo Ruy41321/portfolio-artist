@@ -16,6 +16,7 @@ Diario delle sessioni di lavoro, dalla più recente in alto. Ogni sessione aggiu
   - La lingua del pannello segue il browser (italiano come fallback per lingue non supportate): un artista con browser inglese vede l'admin in inglese, può cambiarla dal proprio account.
   - Lo script locale `pnpm start` svuota la cache delle pagine (`.next/server/route-cache` in Next 16) a ogni avvio, come un container nuovo.
   - Il test e2e sul limite di upload usa `MAX_UPLOAD_MB=5` nell'ambiente di test.
+- PR aperta: https://github.com/Ruy41321/portfolio-artist/pull/1
 - **Restano (umano):** merge della PR, tag `v1.0.0` (avvia la release multi-arch su GHCR) e deploy sul server reale.
 
 ## 2026-10-12 — M8 Documentazione ✅

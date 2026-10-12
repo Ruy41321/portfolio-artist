@@ -268,7 +268,7 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 - [x] `.dockerignore` che esclude `design/`, `docs/`, test e file di sviluppo dall'immagine
 - [x] `CHANGELOG.md` per la versione 1.0.0
 - [x] **Revisione finale**: rileggi tutte le DoD da M1 a M9 e riesegui la suite completa da zero (DB pulito → migrate → seed → test → e2e); correggi ogni regressione
-- [ ] **Apri la PR finale verso `main`** con il riepilogo descritto in §4
+- [x] **Apri la PR finale verso `main`** con il riepilogo descritto in §4
 - [ ] Merge, tag `v1.0.0` e release GHCR (umano)
 - [ ] Deploy su server reale (umano)
 
