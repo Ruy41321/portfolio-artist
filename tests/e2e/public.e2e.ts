@@ -21,7 +21,10 @@ test.describe('Public site', () => {
   test('filters works by category', async ({ page }) => {
     await page.goto('/it')
     const works = page.locator('#works .masonry__item')
-    await expect(works).toHaveCount(12)
+    await expect(works.first()).toBeVisible()
+    // Other tests may add works: compare with the initial total instead of a fixed number.
+    const total = await works.count()
+    expect(total).toBeGreaterThanOrEqual(12)
     await page.getByRole('button', { name: 'Disegno', exact: true }).click()
     await expect(works).toHaveCount(2)
     await expect(page.getByRole('button', { name: 'Disegno', exact: true })).toHaveAttribute(
@@ -29,7 +32,7 @@ test.describe('Public site', () => {
       'true',
     )
     await page.getByRole('button', { name: 'Tutti' }).click()
-    await expect(works).toHaveCount(12)
+    await expect(works).toHaveCount(total)
   })
 
   test('switches between Gallery and Cards and remembers the choice', async ({ page }) => {

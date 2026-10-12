@@ -35,7 +35,7 @@ jobs:
           POSTGRES_DB: portfolio_test
         ports: ['5432:5432']
         options: >-
-          --health-cmd "pg_isready -U portfolio"
+          --health-cmd "pg_isready -U portfolio -d portfolio_test"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
@@ -78,7 +78,7 @@ jobs:
           POSTGRES_DB: portfolio_test
         ports: ['5432:5432']
         options: >-
-          --health-cmd "pg_isready -U portfolio"
+          --health-cmd "pg_isready -U portfolio -d portfolio_test"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
@@ -101,3 +101,28 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+
+  compose-smoke:
+    name: Production compose smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate .env
+        run: SITE_URL=http://localhost:3000 APP_PORT=3000 ./scripts/setup.sh
+      - name: Build and start the production stack
+        run: APP_IMAGE=portfolio-artist:smoke docker compose -f compose.prod.yml up -d --build --wait --wait-timeout 300
+      - name: Check health and home page
+        run: |
+          curl -fsS http://127.0.0.1:3000/api/health
+          curl -fsS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:3000/it
+          curl -fsS http://127.0.0.1:3000/it | grep -q '<html lang="it"'
+      - name: Backup runs
+        run: |
+          docker compose -f compose.prod.yml exec -T backup /bin/sh /backup/backup.sh once
+          ls -l backups
+      - name: Logs on failure
+        if: failure()
+        run: docker compose -f compose.prod.yml logs --tail 200
+      - name: Stop
+        if: always()
+        run: docker compose -f compose.prod.yml down -v

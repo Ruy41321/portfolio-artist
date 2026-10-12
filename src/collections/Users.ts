@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access'
 import { t } from '@/i18n/admin'
+import { getServerURL } from '@/lib/env'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -18,6 +19,11 @@ export const Users: CollectionConfig = {
     maxLoginAttempts: 5,
     lockTime: 10 * 60 * 1000,
     tokenExpiration: 60 * 60 * 24 * 7,
+    cookies: {
+      // Behind HTTPS (reverse proxy) the session cookie is sent over secure connections only.
+      secure: getServerURL().startsWith('https://'),
+      sameSite: 'Lax',
+    },
   },
   access: {
     read: authenticated,

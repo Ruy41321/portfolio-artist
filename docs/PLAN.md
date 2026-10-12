@@ -226,26 +226,26 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 **DoD:** Lighthouse SEO ≥ 95 (via `lighthouse` CLI con Chromium di Playwright); JSON-LD valido secondo schema.org (test automatico sulla struttura); il form funziona con e senza SMTP (test di integrazione).
 
 ### M6 — Test e2e e qualità
-- [ ] Configura Playwright con un server su DB di test seedato
-- [ ] e2e pubblico: ordine delle sezioni Biografia → Opere → Contatti, filtro per categoria, cambio vista Galleria/Schede, lightbox e URL dell'opera, cambio lingua, form contatti
-- [ ] e2e admin: login, creazione opera con immagini, pubblicazione, verifica sul sito (scenario DoD di M3)
-- [ ] Test accessibilità con `@axe-core/playwright` sulle pagine principali (0 violazioni serious/critical)
-- [ ] Aggiungi gli e2e alla CI (job separato, artifact con trace in caso di fallimento)
+- [x] Configura Playwright con un server su DB di test seedato
+- [x] e2e pubblico: ordine delle sezioni Biografia → Opere → Contatti, filtro per categoria, cambio vista Galleria/Schede, lightbox e URL dell'opera, cambio lingua, form contatti
+- [x] e2e admin: login, creazione opera con immagini, pubblicazione, verifica sul sito (scenario DoD di M3)
+- [x] Test accessibilità con `@axe-core/playwright` sulle pagine principali (0 violazioni serious/critical)
+- [x] Aggiungi gli e2e alla CI (job separato, artifact con trace in caso di fallimento)
 
 **DoD:** CI verde con unit, integration ed e2e.
 
 ### M7 — Produzione Docker
-- [ ] `compose.prod.yml` con:
+- [x] `compose.prod.yml` con:
   - `app` (immagine GHCR o build locale, healthcheck, restart, porta `APP_PORT` esposta solo su `127.0.0.1` di default, configurabile)
   - `postgres` (volume, healthcheck, non esposto)
   - `backup`: dump giornaliero di Postgres e archivio del volume media, con retention configurabile
-- [ ] Rendi l'app compatibile con un reverse proxy esterno: `NEXT_PUBLIC_SERVER_URL` usato per URL assoluti, sitemap, OG e CORS/CSRF di Payload; header `X-Forwarded-*` rispettati
-- [ ] Header di sicurezza applicati dall'app (`next.config` headers): CSP compatibile con l'admin Payload, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`. HSTS resta al proxy/TLS esterno.
-- [ ] Cache headers corretti per `/_next/static` e media, così il proxy esterno o il CDN possono fare cache
-- [ ] `scripts/setup.sh`: genera `.env` con segreti casuali e chiede l'URL pubblico del sito
-- [ ] Script di backup e restore documentati e testati (dump → DB pulito → restore → sito identico)
-- [ ] Workflow `release.yml`: su tag `v*` fa build multi-arch (amd64/arm64) e push su `ghcr.io/<owner>/portfolio-artist`
-- [ ] Verifica che l'immagine runner sia minimale e senza devDependencies; annota la dimensione in PROGRESS
+- [x] Rendi l'app compatibile con un reverse proxy esterno: `NEXT_PUBLIC_SERVER_URL` usato per URL assoluti, sitemap, OG e CORS/CSRF di Payload; header `X-Forwarded-*` rispettati
+- [x] Header di sicurezza applicati dall'app (`next.config` headers): CSP compatibile con l'admin Payload, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`. HSTS resta al proxy/TLS esterno.
+- [x] Cache headers corretti per `/_next/static` e media, così il proxy esterno o il CDN possono fare cache
+- [x] `scripts/setup.sh`: genera `.env` con segreti casuali e chiede l'URL pubblico del sito
+- [x] Script di backup e restore documentati e testati (dump → DB pulito → restore → sito identico)
+- [x] Workflow `release.yml`: su tag `v*` fa build multi-arch (amd64/arm64) e push su `ghcr.io/<owner>/portfolio-artist`
+- [x] Verifica che l'immagine runner sia minimale e senza devDependencies; annota la dimensione in PROGRESS
 
 **DoD:** con Docker, `scripts/setup.sh && docker compose -f compose.prod.yml up -d` porta il sito online su `http://localhost:$APP_PORT`, con contenuti persistenti dopo `down`/`up`. Backup e restore sono verificati. Se nella sessione non c'è Docker, verifica con un job CI dedicato (`compose-smoke`) che fa `up`, curl su `/api/health` e `/it`, poi `down`.
 

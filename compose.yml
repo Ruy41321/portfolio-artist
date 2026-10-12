@@ -9,7 +9,7 @@
 #
 # Production uses compose.prod.yml instead.
 
-name: portfolio-artist
+name: portfolio-artist-dev
 
 services:
   postgres:

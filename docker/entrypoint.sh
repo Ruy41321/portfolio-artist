@@ -12,6 +12,13 @@ if [ -z "${PAYLOAD_SECRET:-}" ]; then
   exit 1
 fi
 
-mkdir -p "${MEDIA_DIR:-/app/media}"
+MEDIA_DIR=${MEDIA_DIR:-/app/media}
+mkdir -p "$MEDIA_DIR"
+if ! touch "$MEDIA_DIR/.write-test" 2>/dev/null; then
+  echo "ERROR: the media folder $MEDIA_DIR is not writable by user $(id -u)." >&2
+  echo "Fix it with: docker compose run --rm -u 0 --entrypoint chown app -R 1001:1001 $MEDIA_DIR" >&2
+  exit 1
+fi
+rm -f "$MEDIA_DIR/.write-test"
 
 exec node server.js

@@ -40,8 +40,13 @@ if (!secret && process.env.NODE_ENV === 'production') {
 
 const maxUploadMB = Number(process.env.MAX_UPLOAD_MB || 20)
 
+const serverURL = getServerURL()
+
 export default buildConfig({
-  serverURL: getServerURL(),
+  serverURL,
+  // Requests with cookies are accepted only from the public site address.
+  cors: [serverURL],
+  csrf: [serverURL],
   admin: {
     user: Users.slug,
     importMap: {

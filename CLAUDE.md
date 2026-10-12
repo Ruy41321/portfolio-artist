@@ -12,7 +12,6 @@ Portfolio web generico per artisti professionisti: un sito pubblico personalizza
 Next.js (App Router) + Payload CMS 3 (admin su `/admin`) · PostgreSQL 17 · TypeScript strict · pnpm · Node 24 LTS · Docker / Compose (TLS gestito esternamente) · Vitest + Playwright · GitHub Actions.
 
 ## Comandi
-<!-- Aggiornare in M1 quando gli script esistono davvero -->
 ```bash
 pnpm install
 cp .env.example .env            # poi imposta PAYLOAD_SECRET
@@ -20,11 +19,14 @@ cp .env.example .env            # poi imposta PAYLOAD_SECRET
 pnpm dev                        # http://localhost:3000 e /admin
 pnpm lint && pnpm typecheck && pnpm test   # test su TEST_DATABASE_URL
 pnpm format                     # Prettier
-pnpm test:e2e
+pnpm test:e2e                   # build + server su :3100 con DB di test seedato (PLAYWRIGHT_CHROMIUM_PATH facoltativo)
+pnpm build && pnpm start        # server standalone come in produzione
 pnpm seed                       # applica le migrazioni + dati demo (idempotente)
 pnpm payload migrate            # applica le migrazioni
 pnpm payload migrate:create <nome>   # dopo ogni modifica allo schema
-docker compose up --build       # stack completo
+docker compose --profile app up # stack di sviluppo completo (hot reload)
+./scripts/setup.sh && docker compose -f compose.prod.yml up -d --build   # produzione
+./scripts/backup.sh · ./scripts/restore.sh <db.dump> [media.tar.gz]
 ```
 Bozze di design: `python -m http.server 5500 --directory design/drafts`.
 
