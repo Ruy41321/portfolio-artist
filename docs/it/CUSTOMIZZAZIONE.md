@@ -1,5 +1,7 @@
 # Customizzazione
 
+[English](../en/CUSTOMIZATION.md) · **Italiano**
+
 Guida per sviluppatori che vogliono adattare il progetto: creare un tema, aggiungere un campo, aggiungere una lingua. Prima di iniziare leggi `CLAUDE.md` (convenzioni) e `docs/PLAN.md` §3 (architettura).
 
 Mappa veloce:

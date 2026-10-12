@@ -82,7 +82,7 @@ Usa la bozza HTML come **riferimento visivo**: tipografia, spaziature, palette e
 ├── compose.yml                       # sviluppo: app + postgres
 ├── compose.prod.yml                  # produzione: app + postgres + backup (TLS esterno)
 ├── .env.example
-└── docs/                             # PLAN, PROGRESS, GUIDA-ARTISTA, DEPLOY
+└── docs/                             # PLAN, PROGRESS; guide in docs/en e docs/it
 ```
 
 ### Modello dati
