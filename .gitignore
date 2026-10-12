@@ -41,3 +41,4 @@ Thumbs.db
 
 # claude local
 .claude/settings.local.json
+.claude/.autopilot-state

@@ -21,7 +21,7 @@ Piano esecutivo per portare il progetto da zero a **ready to publish**. È pensa
 | Layout | **Da scegliere tra le bozze in `design/drafts/`** → vedi §2. Il layout scelto è il *tema di default*. |
 | Media | File su volume Docker locale, ridimensionati con `sharp`. Adapter S3-compatibile opzionale via env. |
 | Email | SMTP opzionale. Senza SMTP i messaggi del form contatti restano consultabili nell'admin. |
-| Distribuzione | Immagine Docker multi-stage (output `standalone` di Next), `compose.yml` per dev e `compose.prod.yml` con **Caddy** (HTTPS automatico) e backup. Immagine pubblicata su **GHCR**. |
+| Distribuzione | Immagine Docker multi-stage (output `standalone` di Next), `compose.yml` per dev e `compose.prod.yml` (app + postgres + backup). **Niente TLS e niente reverse proxy nel progetto**: l'app espone una porta HTTP configurabile (`APP_PORT`) e il TLS è gestito dall'infrastruttura dell'host (reverse proxy esistente o pannello dell'hosting). L'app deve funzionare correttamente dietro proxy (`X-Forwarded-*`, URL pubblico da `NEXT_PUBLIC_SERVER_URL`). Immagine pubblicata su **GHCR**. |
 | Qualità | ESLint + Prettier, `tsc --noEmit`, Vitest per integration e unit, Playwright per e2e, GitHub Actions CI. |
 
 ## 2. Layout scelto
@@ -60,10 +60,10 @@ Quando l'utente sceglie:
 │   ├── seed/                         # dati demo (opere segnaposto + profilo)
 │   └── payload.config.ts
 ├── tests/{int,e2e}/
-├── docker/                           # Caddyfile, entrypoint.sh, backup
+├── docker/                           # entrypoint.sh, backup
 ├── Dockerfile
 ├── compose.yml                       # sviluppo: app + postgres
-├── compose.prod.yml                  # produzione: app + postgres + caddy + backup
+├── compose.prod.yml                  # produzione: app + postgres + backup (TLS esterno)
 ├── .env.example
 └── docs/                             # PLAN, PROGRESS, GUIDA-ARTISTA, DEPLOY
 ```
@@ -101,16 +101,43 @@ Quando l'utente sceglie:
 
 ---
 
-## 4. Regole di lavoro per l'AI
+## 4. Regole di lavoro per l'AI — modalità autopilota
 
-1. **Un branch e una PR per milestone**, con nome `feat/mN-descrizione`. Usa Conventional Commits. Se la PR precedente non è ancora mergiata, parti dal suo branch e indicalo nella descrizione della PR.
-2. **Prima di aprire la PR** devono passare `pnpm lint`, `pnpm typecheck`, `pnpm test` e, da M6 in poi, `pnpm test:e2e`. La CI deve essere verde.
-3. **Se nella sessione cloud non c'è Docker o Postgres**: fai push del branch e verifica tramite GitHub Actions (`gh run watch`). La CI ha un service Postgres ed è la fonte di verità.
-4. **Aggiorna i documenti a ogni milestone**: spunta le checkbox qui, aggiungi una voce in `docs/PROGRESS.md` (cosa è stato fatto, decisioni, problemi aperti) e aggiorna `CLAUDE.md` se cambiano i comandi.
-5. **Non cambiare le decisioni del §1** e non aggiungere dipendenze pesanti senza motivarlo nella PR.
-6. **Verifica i nomi delle API Payload** sulla documentazione ufficiale della versione installata prima di usarle (`orderable`, bulk upload, live preview…). Le API cambiano tra minor release.
-7. **Admin pensato per un artista non tecnico**: ogni campo ha label e `admin.description` in italiano chiaro, senza gergo tecnico.
-8. **Niente segreti nel repo.** Tutto passa da `.env`, con un esempio documentato in `.env.example`.
+Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza fermarsi a chiedere**. L'utente viene coinvolto solo alla fine.
+
+**Ciclo di lavoro per ogni task**
+1. Implementa il task.
+2. Esegui subito le verifiche disponibili: `pnpm lint`, `pnpm typecheck` e i test pertinenti. Scrivi i test **insieme** al codice, non alla fine.
+3. Se qualcosa fallisce, correggi prima di passare oltre. Non si accumulano errori.
+4. Fai un commit (Conventional Commits) e spunta la checkbox in questo file.
+
+**Gate di fine milestone.** Non si passa alla milestone successiva finché il gate non è verde.
+- Esegui la suite completa (`pnpm lint && pnpm typecheck && pnpm test`, più `pnpm test:e2e` da M6) e `docker build .` se Docker è disponibile.
+- Rileggi la DoD della milestone e verificala punto per punto **con prove concrete** (output dei comandi, risposta HTTP, screenshot Playwright). Annota le prove in `docs/PROGRESS.md`.
+- Fai push del branch.
+
+**Decisioni e blocchi**
+- **Dubbi di design o implementazione**: non chiedere. Scegli l'opzione più semplice e coerente con §1–§3, annotala in `PROGRESS.md` sotto "Decisioni autonome" e prosegui.
+- **Blocco reale** (manca un segreto o un servizio esterno, un'azione richiede un umano): marca il task con `[!]` e una nota, poi prosegui con il resto. Ti fermi solo se *nessun* task rimanente è eseguibile; in quel caso scrivi `docs/BLOCKED.md` con il motivo.
+- I task marcati **(umano)** non sono a carico dell'AI e non bloccano la fine del lavoro.
+
+**Ambiente**
+- Postgres serve per test e dev. Se Docker c'è, usa `docker compose up -d postgres`. Altrimenti installa e avvia Postgres localmente (es. `apt-get install -y postgresql` + `service postgresql start`) tramite lo script `scripts/dev-db.sh` creato in M1, che gestisce entrambi i casi.
+- La CI GitHub Actions è una verifica in più, non un sostituto dei test locali.
+
+**Branch e consegna**
+- Lavora su un unico branch (quello della sessione, oppure `develop`), con commit piccoli e frequenti e push a fine di ogni milestone.
+- **Alla fine** apri **una sola PR verso `main`**. La descrizione contiene: riepilogo per milestone, decisioni autonome, task `[!]` o (umano) rimasti e istruzioni per provare il risultato. L'apertura della PR fa scattare la notifica all'utente.
+
+**Documenti**
+- A ogni milestone aggiungi una voce in `docs/PROGRESS.md` (fatto, prove, decisioni, problemi aperti) e aggiorna `CLAUDE.md` se cambiano i comandi.
+- `PLAN.md` e `PROGRESS.md` sono la memoria tra un contesto e l'altro: tienili aggiornati, così dopo una compattazione o una nuova sessione si riparte senza perdere nulla.
+
+**Altre regole**
+- **Non cambiare le decisioni del §1** e non aggiungere dipendenze pesanti senza motivarlo nella PR.
+- **Verifica i nomi delle API Payload** sulla documentazione ufficiale della versione installata prima di usarle (`orderable`, bulk upload, live preview…). Le API cambiano tra minor release.
+- **Admin pensato per un artista non tecnico**: ogni campo ha label e `admin.description` in italiano chiaro, senza gergo tecnico.
+- **Niente segreti nel repo.** Tutto passa da `.env`, con un esempio documentato in `.env.example`.
 
 ---
 
@@ -120,7 +147,7 @@ Quando l'utente sceglie:
 - [x] Repo GitHub privata, `.gitignore`, `.gitattributes`, `.editorconfig`
 - [x] Bozze layout in `design/drafts/`
 - [x] `CLAUDE.md`, `docs/PLAN.md`, `docs/PROGRESS.md`
-- [ ] **Scelta del layout da parte dell'utente** (§2)
+- [ ] **Scelta del layout** (§2) (umano)
 
 ### M1 — Scaffolding app + Docker dev
 - [ ] Inizializza Next.js + Payload 3 (template `blank`) nella root del repo con TypeScript strict, pnpm, alias `@/`
@@ -129,9 +156,11 @@ Quando l'utente sceglie:
 - [ ] Configura ESLint (config Next) + Prettier e gli script `lint`, `format`, `typecheck`, `test`, `test:e2e`, `seed`, `generate:types`
 - [ ] Scrivi un `Dockerfile` multi-stage (deps → build → runner con utente non-root) e `docker/entrypoint.sh` (esegue `payload migrate`, poi avvia il server)
 - [ ] Prepara `compose.yml` per lo sviluppo (postgres con healthcheck e volume; app con hot reload montando il sorgente, oppure solo il DB e `pnpm dev` locale: documenta entrambe le opzioni)
+- [ ] Crea `scripts/dev-db.sh`, idempotente: avvia Postgres con Docker se c'è, altrimenti con un'installazione locale (apt), e crea DB e utente di sviluppo e di test. Serve per lavorare in sessioni cloud senza Docker.
 - [ ] Aggiungi la CI GitHub Actions `ci.yml`: install con cache pnpm, lint, typecheck, test (service postgres), `docker build`
+- [ ] Aggiungi un test smoke (Vitest) che avvia Payload sul DB di test e verifica che la config si carichi
 
-**DoD:** `docker compose up` avvia l'app; `/admin` mostra *create first user*; `/api/health` risponde 200; CI verde.
+**DoD:** `pnpm dev` (con il DB di `scripts/dev-db.sh`) avvia l'app; `/admin` mostra *create first user*; `/api/health` risponde 200; `docker build .` riesce (se Docker è disponibile, altrimenti tramite CI).
 
 ### M2 — Modello dati + localizzazione
 - [ ] Configura `localization` con `it` (default) ed `en` e fallback attivo
@@ -176,7 +205,7 @@ Quando l'utente sceglie:
 - [ ] JSON-LD `Person` per l'artista e `VisualArtwork` per ogni opera
 - [ ] Pagina privacy (da SiteSettings); nessun cookie di profilazione di default, quindi niente banner; analytics opzionali solo privacy-friendly
 
-**DoD:** Lighthouse SEO ≥ 95; validatore Rich Results senza errori; il form funziona con e senza SMTP.
+**DoD:** Lighthouse SEO ≥ 95 (via `lighthouse` CLI con Chromium di Playwright); JSON-LD valido secondo schema.org (test automatico sulla struttura); il form funziona con e senza SMTP (test di integrazione).
 
 ### M6 — Test e2e e qualità
 - [ ] Configura Playwright con un server su DB di test seedato
@@ -189,36 +218,43 @@ Quando l'utente sceglie:
 
 ### M7 — Produzione Docker
 - [ ] `compose.prod.yml` con:
-  - `app` (immagine GHCR, healthcheck, restart)
+  - `app` (immagine GHCR o build locale, healthcheck, restart, porta `APP_PORT` esposta solo su `127.0.0.1` di default, configurabile)
   - `postgres` (volume, healthcheck, non esposto)
-  - `caddy` (HTTPS automatico, compressione, header di sicurezza, cache lunga per `/_next/static` e media)
   - `backup`: dump giornaliero di Postgres e archivio del volume media, con retention configurabile
-- [ ] `docker/Caddyfile` parametrizzato con `DOMAIN` ed email ACME
-- [ ] `scripts/setup.sh`: genera `.env` con segreti casuali e chiede dominio ed email
-- [ ] Script di restore documentato e testato
-- [ ] Header di sicurezza: CSP compatibile con l'admin Payload, HSTS, `X-Content-Type-Options`, `Referrer-Policy`
+- [ ] Rendi l'app compatibile con un reverse proxy esterno: `NEXT_PUBLIC_SERVER_URL` usato per URL assoluti, sitemap, OG e CORS/CSRF di Payload; header `X-Forwarded-*` rispettati
+- [ ] Header di sicurezza applicati dall'app (`next.config` headers): CSP compatibile con l'admin Payload, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`. HSTS resta al proxy/TLS esterno.
+- [ ] Cache headers corretti per `/_next/static` e media, così il proxy esterno o il CDN possono fare cache
+- [ ] `scripts/setup.sh`: genera `.env` con segreti casuali e chiede l'URL pubblico del sito
+- [ ] Script di backup e restore documentati e testati (dump → DB pulito → restore → sito identico)
 - [ ] Workflow `release.yml`: su tag `v*` fa build multi-arch (amd64/arm64) e push su `ghcr.io/<owner>/portfolio-artist`
-- [ ] Verifica che l'immagine runner sia minimale e senza devDependencies; la dimensione va riportata nella PR
+- [ ] Verifica che l'immagine runner sia minimale e senza devDependencies; annota la dimensione in PROGRESS
 
-**DoD:** su una VM pulita con Docker, `scripts/setup.sh && docker compose -f compose.prod.yml up -d` porta il sito online in HTTPS; backup e restore verificati.
+**DoD:** con Docker, `scripts/setup.sh && docker compose -f compose.prod.yml up -d` porta il sito online su `http://localhost:$APP_PORT`, con contenuti persistenti dopo `down`/`up`. Backup e restore sono verificati. Se nella sessione non c'è Docker, verifica con un job CI dedicato (`compose-smoke`) che fa `up`, curl su `/api/health` e `/it`, poi `down`.
 
 ### M8 — Documentazione
-- [ ] `README.md`: cos'è, screenshot, quick start dev, deploy in 5 passi, configurazione, aggiornamento (`docker compose pull && up -d`)
-- [ ] `docs/DEPLOY.md`: VPS (requisiti, DNS, firewall), aggiornamenti, backup/restore, troubleshooting
-- [ ] `docs/GUIDA-ARTISTA.md`, in italiano semplice e con screenshot: primo accesso, profilo, aggiungere/ordinare opere, serie, traduzioni EN, impostazioni, messaggi
+- [ ] `README.md`: cos'è, screenshot (Playwright), quick start dev, deploy in 5 passi, configurazione, aggiornamento (`docker compose pull && up -d`)
+- [ ] `docs/DEPLOY.md`:
+  - (a) server proprio con Docker dietro reverse proxy/TLS esistente, con esempi di config per nginx, Caddy e Traefik che puntano a `APP_PORT`
+  - (b) Aruba: chiarisci che serve un prodotto con Docker (Cloud VPS / Cloud Server) e che l'hosting condiviso non supporta app Node/Docker
+  - aggiornamenti, backup/restore, troubleshooting
+- [ ] `docs/GUIDA-ARTISTA.md`, in italiano semplice e con screenshot (Playwright): primo accesso, profilo, aggiungere/ordinare opere, serie, traduzioni EN, impostazioni, messaggi
 - [ ] `docs/CUSTOMIZZAZIONE.md`: come creare un nuovo tema, aggiungere un campo, aggiungere una lingua
 
 **DoD:** una persona tecnica esterna riesce a fare il deploy seguendo solo i documenti.
 
-### M9 — Hardening e release 1.0
-- [ ] Lighthouse mobile ≥ 90 su Performance, Accessibility, Best Practices e SEO (home, opera, bio)
-- [ ] Audit dipendenze (`pnpm audit`); Dependabot/Renovate configurato
+### M9 — Hardening e consegna
+- [ ] Lighthouse mobile ≥ 90 su Performance, Accessibility, Best Practices e SEO (home, opera, bio), misurato con `lighthouse` CLI; risultati in PROGRESS
+- [ ] Audit dipendenze (`pnpm audit`) senza vulnerabilità high/critical; Dependabot configurato
 - [ ] Limiti upload (dimensione, tipi MIME), test di stress della galleria con 200 opere
 - [ ] Verifica del flusso *first run* da DB vuoto (senza seed): il sito mostra uno stato vuoto elegante e l'admin guida l'artista
-- [ ] Rimozione/esclusione di `design/drafts` dall'immagine Docker (`.dockerignore`)
-- [ ] `CHANGELOG.md`, tag `v1.0.0`, release GitHub con immagine GHCR
+- [ ] `.dockerignore` che esclude `design/`, `docs/`, test e file di sviluppo dall'immagine
+- [ ] `CHANGELOG.md` per la versione 1.0.0
+- [ ] **Revisione finale**: rileggi tutte le DoD da M1 a M9 e riesegui la suite completa da zero (DB pulito → migrate → seed → test → e2e); correggi ogni regressione
+- [ ] **Apri la PR finale verso `main`** con il riepilogo descritto in §4
+- [ ] Merge, tag `v1.0.0` e release GHCR (umano)
+- [ ] Deploy su server reale (umano)
 
-**DoD — Ready to publish:** tutte le checkbox di M1–M9 sono spuntate, la CI è verde, l'immagine `v1.0.0` è su GHCR e il deploy è testato su un server reale.
+**DoD — Ready to publish:** tutte le checkbox non (umano) di M1–M9 sono spuntate, la suite completa è verde e la PR finale è aperta.
 
 ### M10 — (Opzionale, post 1.0)
 - [ ] Implementare le altre bozze come temi alternativi selezionabili da SiteSettings

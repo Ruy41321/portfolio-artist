@@ -9,7 +9,7 @@ Sito portfolio **generico e personalizzabile** per artisti professionisti, con u
 - Pannello admin in italiano (Payload CMS): opere, serie, categorie, profilo, CV, impostazioni
 - Temi personalizzabili (colori, font, layout)
 - Form contatti, SEO completo (sitemap, Open Graph, dati strutturati)
-- Deploy con Docker Compose: HTTPS automatico (Caddy) e backup giornalieri
+- Deploy con Docker Compose (dietro il tuo reverse proxy/TLS) e backup giornalieri
 
 ## Bozze di layout
 Le bozze sono in [`design/drafts/`](design/drafts/). Per vederle:
@@ -21,4 +21,4 @@ python -m http.server 5500 --directory design/drafts
 Poi apri http://localhost:5500.
 
 ## Stack
-Next.js · Payload CMS 3 · PostgreSQL · TypeScript · Docker · Caddy
+Next.js · Payload CMS 3 · PostgreSQL · TypeScript · Docker
