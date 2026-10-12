@@ -250,13 +250,13 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 **DoD:** con Docker, `scripts/setup.sh && docker compose -f compose.prod.yml up -d` porta il sito online su `http://localhost:$APP_PORT`, con contenuti persistenti dopo `down`/`up`. Backup e restore sono verificati. Se nella sessione non c'è Docker, verifica con un job CI dedicato (`compose-smoke`) che fa `up`, curl su `/api/health` e `/it`, poi `down`.
 
 ### M8 — Documentazione
-- [ ] `README.md`: cos'è, screenshot (Playwright), quick start dev, deploy in 5 passi, configurazione, aggiornamento (`docker compose pull && up -d`)
-- [ ] `docs/DEPLOY.md`:
+- [x] `README.md`: cos'è, screenshot (Playwright), quick start dev, deploy in 5 passi, configurazione, aggiornamento (`docker compose pull && up -d`)
+- [x] `docs/DEPLOY.md`:
   - (a) server proprio con Docker dietro reverse proxy/TLS esistente, con esempi di config per nginx, Caddy e Traefik che puntano a `APP_PORT`
   - (b) Aruba: chiarisci che serve un prodotto con Docker (Cloud VPS / Cloud Server) e che l'hosting condiviso non supporta app Node/Docker
   - aggiornamenti, backup/restore, troubleshooting
-- [ ] `docs/GUIDA-ARTISTA.md`, in italiano semplice e con screenshot (Playwright): primo accesso, profilo, aggiungere/ordinare opere, gestire le categorie (filtri), traduzioni EN, impostazioni, messaggi
-- [ ] `docs/CUSTOMIZZAZIONE.md`: come creare un nuovo tema, aggiungere un campo, aggiungere una lingua
+- [x] `docs/GUIDA-ARTISTA.md`, in italiano semplice e con screenshot (Playwright): primo accesso, profilo, aggiungere/ordinare opere, gestire le categorie (filtri), traduzioni EN, impostazioni, messaggi
+- [x] `docs/CUSTOMIZZAZIONE.md`: come creare un nuovo tema, aggiungere un campo, aggiungere una lingua
 
 **DoD:** una persona tecnica esterna riesce a fare il deploy seguendo solo i documenti.
 
