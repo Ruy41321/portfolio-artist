@@ -4,6 +4,17 @@ Diario delle sessioni di lavoro, dalla più recente in alto. Ogni sessione aggiu
 
 ---
 
+## 2026-10-12 — M2 Modello dati + localizzazione ✅
+- **Fatto:** localization `it` (default) + `en` con fallback; admin in italiano/inglese (`i18n.supportedLanguages`, fallback `it`); collections Artworks (bozze, `orderable`, slug unico automatico), Categories (`orderable`), Media (4 `imageSizes`, focal point, limite dimensione da `MAX_UPLOAD_MB`), Messages, Users (`maxLoginAttempts` 5, `lockTime` 10 min); globals Profile e SiteSettings; access control (pubblico: solo opere pubblicate, Messages non creabili/leggibili via API); query del frontend in `src/lib/queries.ts`; migrazione `initial`; seed idempotente (`pnpm seed`: 4 categorie, 12 opere con immagini astratte generate da SVG con sharp, profilo, impostazioni, utente admin facoltativo).
+- **Prove:** `pnpm test` 14/14 verdi (artworks: creazione, slug unico, immagine obbligatoria con messaggio italiano, bozza invisibile al pubblico, campi localizzati + fallback; categories: rinomina nei filtri, ordine admin e categorie senza opere pubblicate escluse, eliminazione con opere → opere senza categoria; access; smoke). Seed eseguito due volte → 12 opere, 4 categorie, 13 media (nessun duplicato). Screenshot Playwright dell'admin: dashboard con gruppi "Portfolio / Messaggi / Impostazioni / Il mio profilo" e lista Opere in italiano con drag & drop.
+- **Decisioni autonome:**
+  - Campi localizzati obbligatori **solo in italiano** (validazione `requiredInDefaultLocale`): la traduzione EN resta facoltativa e il sito usa il fallback.
+  - Il campo `category` è obbligatorio via validazione ma la FK è `ON DELETE SET NULL`: eliminando una categoria le opere restano senza categoria (visibili in "Tutti").
+  - Aggiunti campi utili non elencati in §3: `Profile.contactIntro` (testo della sezione Contatti, previsto in §2), `SiteSettings.currency` (visibile solo con "Mostra i prezzi"), `Messages.locale`.
+  - `fontPairing`: Inter, Fraunces + Inter, Space Grotesk + Inter. `analytics`: provider (Plausible/Umami), ID del sito e URL dello script, nessun codice arbitrario.
+  - **Schema solo via migrazioni anche in dev** (`PAYLOAD_DB_PUSH=false` in `.env.example`): il `push` di Drizzle chiede conferme interattive e si bloccava. I test ricreano lo schema del DB di test dalle migrazioni a ogni run (`tests/globalSetup.ts`), così verificano anche le migrazioni. `pnpm seed` esegue prima `payload migrate`.
+- **Prossimo passo:** M3, admin UX per l'artista.
+
 ## 2026-10-12 — M1 Scaffolding app + Docker dev ✅
 - **Fatto:** Next.js 16.3 + Payload 3.90 (template `blank`) nella root, Postgres adapter, sharp, config da env; `output: 'standalone'`; `/api/health` (ping al DB con `select 1`); ESLint flat config (next + prettier), Prettier, script `lint`/`format`/`typecheck`/`test`/`test:e2e`/`seed`/`generate:types`; Dockerfile multi-stage con utente non-root; `docker/entrypoint.sh`; `compose.yml` (solo DB, oppure `--profile app` con hot reload); `scripts/dev-db.sh`; CI `ci.yml`; test smoke Vitest.
 - **Prove:** `pnpm lint && pnpm typecheck && pnpm test` verdi (smoke 1/1). Con `pnpm dev`: `GET /api/health` → `200 {"status":"ok"}`; `/admin` reindirizza a `/admin/create-first-user` (verificato con Playwright). `docker build` riuscito (364 MB su disco, 88 MB compressa); il container avviato risponde 200 su health e logga "No migrations to run".

@@ -179,14 +179,14 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 **DoD:** `pnpm dev` (con il DB di `scripts/dev-db.sh`) avvia l'app; `/admin` mostra *create first user*; `/api/health` risponde 200; `docker build .` riesce (se Docker è disponibile, altrimenti tramite CI).
 
 ### M2 — Modello dati + localizzazione
-- [ ] Configura `localization` con `it` (default) ed `en` e fallback attivo
-- [ ] Imposta l'admin in italiano (`i18n.supportedLanguages` it + en, fallback it)
-- [ ] Crea le collections Users, Media, Artworks, Categories e Messages come da §3
-- [ ] Crea i globals Profile e SiteSettings come da §3
-- [ ] Configura l'access control: lettura pubblica solo per i documenti pubblicati; scrittura solo per gli utenti autenticati; Messages creabile dal pubblico solo tramite la server action del form
-- [ ] Genera i tipi con `payload generate:types` e crea la prima migrazione con `payload migrate:create initial`
-- [ ] Scrivi lo script di seed `pnpm seed`: profilo demo, 4 categorie e 12 opere con immagini segnaposto generate (es. con sharp, ispirate a `design/drafts/shared/placeholders.css`). Lo script deve essere idempotente.
-- [ ] Scrivi i test di integrazione (Vitest + Local API): creazione di un'opera, slug unico, opera in bozza non visibile al pubblico, campi localizzati; categorie: rinomina riflessa nei filtri, categoria senza opere pubblicate esclusa dai filtri, eliminazione di una categoria con opere gestita senza errori
+- [x] Configura `localization` con `it` (default) ed `en` e fallback attivo
+- [x] Imposta l'admin in italiano (`i18n.supportedLanguages` it + en, fallback it)
+- [x] Crea le collections Users, Media, Artworks, Categories e Messages come da §3
+- [x] Crea i globals Profile e SiteSettings come da §3
+- [x] Configura l'access control: lettura pubblica solo per i documenti pubblicati; scrittura solo per gli utenti autenticati; Messages creabile dal pubblico solo tramite la server action del form
+- [x] Genera i tipi con `payload generate:types` e crea la prima migrazione con `payload migrate:create initial`
+- [x] Scrivi lo script di seed `pnpm seed`: profilo demo, 4 categorie e 12 opere con immagini segnaposto generate (es. con sharp, ispirate a `design/drafts/shared/placeholders.css`). Lo script deve essere idempotente.
+- [x] Scrivi i test di integrazione (Vitest + Local API): creazione di un'opera, slug unico, opera in bozza non visibile al pubblico, campi localizzati; categorie: rinomina riflessa nei filtri, categoria senza opere pubblicate esclusa dai filtri, eliminazione di una categoria con opere gestita senza errori
 
 **DoD:** il seed popola il DB; nell'admin si vedono tutte le sezioni in italiano; test verdi.
 

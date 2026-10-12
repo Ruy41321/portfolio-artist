@@ -21,8 +21,9 @@ pnpm dev                        # http://localhost:3000 e /admin
 pnpm lint && pnpm typecheck && pnpm test   # test su TEST_DATABASE_URL
 pnpm format                     # Prettier
 pnpm test:e2e
-pnpm seed                       # dati demo
-pnpm payload migrate:create <nome>
+pnpm seed                       # applica le migrazioni + dati demo (idempotente)
+pnpm payload migrate            # applica le migrazioni
+pnpm payload migrate:create <nome>   # dopo ogni modifica allo schema
 docker compose up --build       # stack completo
 ```
 Bozze di design: `python -m http.server 5500 --directory design/drafts`.
