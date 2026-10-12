@@ -163,7 +163,7 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 - [x] Repo GitHub privata, `.gitignore`, `.gitattributes`, `.editorconfig`
 - [x] Bozze layout in `design/drafts/`
 - [x] `CLAUDE.md`, `docs/PLAN.md`, `docs/PROGRESS.md`
-- [ ] **Scelta del layout** (§2) (umano)
+- [x] **Scelta del layout** (§2) (umano)
 
 ### M1 — Scaffolding app + Docker dev
 - [x] Inizializza Next.js + Payload 3 (template `blank`) nella root del repo con TypeScript strict, pnpm, alias `@/`
@@ -261,13 +261,13 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 **DoD:** una persona tecnica esterna riesce a fare il deploy seguendo solo i documenti.
 
 ### M9 — Hardening e consegna
-- [ ] Lighthouse mobile ≥ 90 su Performance, Accessibility, Best Practices e SEO (home, opera, bio), misurato con `lighthouse` CLI; risultati in PROGRESS
-- [ ] Audit dipendenze (`pnpm audit`) senza vulnerabilità high/critical; Dependabot configurato
-- [ ] Limiti upload (dimensione, tipi MIME), test di stress della galleria con 200 opere
-- [ ] Verifica del flusso *first run* da DB vuoto (senza seed): il sito mostra uno stato vuoto elegante e l'admin guida l'artista
-- [ ] `.dockerignore` che esclude `design/`, `docs/`, test e file di sviluppo dall'immagine
-- [ ] `CHANGELOG.md` per la versione 1.0.0
-- [ ] **Revisione finale**: rileggi tutte le DoD da M1 a M9 e riesegui la suite completa da zero (DB pulito → migrate → seed → test → e2e); correggi ogni regressione
+- [x] Lighthouse mobile ≥ 90 su Performance, Accessibility, Best Practices e SEO (home, opera, bio), misurato con `lighthouse` CLI; risultati in PROGRESS
+- [x] Audit dipendenze (`pnpm audit`) senza vulnerabilità high/critical; Dependabot configurato
+- [x] Limiti upload (dimensione, tipi MIME), test di stress della galleria con 200 opere
+- [x] Verifica del flusso *first run* da DB vuoto (senza seed): il sito mostra uno stato vuoto elegante e l'admin guida l'artista
+- [x] `.dockerignore` che esclude `design/`, `docs/`, test e file di sviluppo dall'immagine
+- [x] `CHANGELOG.md` per la versione 1.0.0
+- [x] **Revisione finale**: rileggi tutte le DoD da M1 a M9 e riesegui la suite completa da zero (DB pulito → migrate → seed → test → e2e); correggi ogni regressione
 - [ ] **Apri la PR finale verso `main`** con il riepilogo descritto in §4
 - [ ] Merge, tag `v1.0.0` e release GHCR (umano)
 - [ ] Deploy su server reale (umano)

@@ -4,6 +4,20 @@ Diario delle sessioni di lavoro, dalla più recente in alto. Ogni sessione aggiu
 
 ---
 
+## 2026-10-12 — M9 Hardening e consegna ✅
+- **Fatto:** aggiornamenti di sicurezza (next 16.3.8, sharp 0.35.5, vitest 4.1, nodemailer 10, override di undici) e step `pnpm audit --audit-level high` in CI; Dependabot (npm settimanale, Actions e Docker mensile); test sui limiti di upload (tipi vietati HTML/SVG/ZIP rifiutati, file oltre `MAX_UPLOAD_MB` rifiutato via REST); rendering progressivo della galleria (24 opere alla volta, scroll o pulsante "Mostra altre opere") e script di stress `src/seed/stress.ts`; stato vuoto di benvenuto per il primo avvio e placeholder visibili nel form; `.dockerignore` che esclude design, docs, test, script e file di sviluppo; `CHANGELOG.md` 1.0.0.
+- **Prove:**
+  - **Lighthouse mobile** (build di produzione, dati demo): `/it` (home con biografia) 97/100/100/100, `/it/opere/campo-destate` 95/100/100/100, `/it/privacy` 95/100/100/100, `/en` 97/100/100/100 (Performance/Accessibility/Best Practices/SEO).
+  - **Stress 212 opere:** prima del rendering progressivo Performance 89 (DOM 1393 nodi); dopo **94–95** (DOM 268 nodi, LCP 2,8–3,0 s, TBT 60–70 ms). HTML 811 kB non compresso / 50 kB gzip; prima risposta 0,6 s, poi 12 ms dalla cache.
+  - **Audit:** nessuna vulnerabilità high/critical tranne `braces` (GHSA-vfj7-8cjw-p6xm): nessuna versione corretta esiste, è usata solo da `sass`/`chokidar` durante la build e non è raggiungibile da input utente → ignorata esplicitamente in `pnpm.auditConfig`.
+  - **First run** da DB vuoto: migrazioni all'avvio, home con "Benvenuti. Il sito è in allestimento" e "Le opere arriveranno presto", creazione del primo utente, dashboard con l'invito a compilare il profilo.
+  - **Revisione finale da zero:** DB `portfolio` ricreato → `pnpm seed` (migrazioni + demo) → lint 0 problemi, typecheck ok, `pnpm test` 37/37 (11 file), `pnpm test:e2e` 20/20; `docker build` ok (376 MB / 90 MB compressa).
+- **Decisioni autonome:**
+  - La lingua del pannello segue il browser (italiano come fallback per lingue non supportate): un artista con browser inglese vede l'admin in inglese, può cambiarla dal proprio account.
+  - Lo script locale `pnpm start` svuota la cache delle pagine (`.next/server/route-cache` in Next 16) a ogni avvio, come un container nuovo.
+  - Il test e2e sul limite di upload usa `MAX_UPLOAD_MB=5` nell'ambiente di test.
+- **Restano (umano):** merge della PR, tag `v1.0.0` (avvia la release multi-arch su GHCR) e deploy sul server reale.
+
 ## 2026-10-12 — M8 Documentazione ✅
 - **Fatto:** `README.md` (cos'è, screenshot, avvio rapido, deploy in 5 passi, configurazione, aggiornamento); `docs/DEPLOY.md` (architettura, server proprio con esempi nginx/Caddy/Traefik, Aruba: serve Cloud VPS/Cloud Server con Docker, l'hosting condiviso non va bene; aggiornamenti, backup/ripristino, tabella di risoluzione problemi); `docs/GUIDA-ARTISTA.md` in italiano semplice con screenshot (accesso, profilo, opere, ordinamento, categorie, traduzioni EN, impostazioni, messaggi, immagini); `docs/CUSTOMIZZAZIONE.md` (nuovo tema, nuovo campo, nuova lingua); `scripts/screenshots.mjs` rigenera i 18 screenshot in `docs/images/` (1,1 MB, JPEG).
 - **Prove:** i passi di DEPLOY sono quelli eseguiti in M7 da una cartella con solo `compose.prod.yml`, `docker/backup/` e `scripts/` (setup → up → admin → backup → restore). Le etichette dell'admin citate nella guida sono verificate sulle traduzioni italiane di Payload 3.90 ("Caricamento in Blocco", "Annulla pubblicazione", "Modifica immagine"…).
