@@ -39,6 +39,7 @@ Bozze di design: `python -m http.server 5500 --directory design/drafts`.
 - Segreti solo via env; tieni `.env.example` aggiornato.
 - Prima di usare un'API Payload/Next verifica la documentazione della versione installata.
 - Se nella sessione non c'è Docker o Postgres, verifica tramite la CI (`gh run watch`).
+- Documentazione bilingue: `README.md` (inglese, principale) e `README.it.md`; guide in `docs/en/` e `docs/it/`; `CHANGELOG.md` e `CHANGELOG.it.md`. Ogni modifica va fatta in entrambe le lingue. Gli screenshot si rigenerano con `SHOTS_LANG=en|it node scripts/screenshots.mjs` (in `docs/images/<lingua>/`). `docs/PLAN.md` e `docs/PROGRESS.md` restano in italiano.
 - A fine milestone: spunta le checkbox in `docs/PLAN.md`, aggiungi una voce in `docs/PROGRESS.md` e aggiorna questo file se cambiano i comandi.
 
 <!-- BEGIN:nextjs-agent-rules -->

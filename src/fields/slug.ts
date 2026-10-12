@@ -54,7 +54,7 @@ export function slugField(sourceField: string, collection: string): Field {
       position: 'sidebar',
       description: t(
         'Si crea da solo dal titolo. Compare nel link della pagina (es. /it/opere/mattino-sul-lago). Cambialo solo se serve.',
-        'Generated from the title. It appears in the page link (e.g. /en/opere/morning-on-the-lake). Change it only if needed.',
+        'Generated from the Italian title. It appears in the page link (e.g. /en/opere/mattino-sul-lago). Change it only if needed.',
       ),
     },
     hooks: {

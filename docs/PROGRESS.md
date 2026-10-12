@@ -4,6 +4,12 @@ Diario delle sessioni di lavoro, dalla più recente in alto. Ogni sessione aggiu
 
 ---
 
+## 2026-10-12 — Documentazione bilingue
+- **Fatto:** `README.md` ora in inglese (principale) con `README.it.md` in italiano; guide spostate in `docs/it/` (DEPLOY, GUIDA-ARTISTA, CUSTOMIZZAZIONE) e tradotte in `docs/en/` (DEPLOY, ARTIST-GUIDE, CUSTOMIZATION); `CHANGELOG.md` (inglese) e `CHANGELOG.it.md`; ogni file ha il link all'altra lingua; ogni README punta alla documentazione della sua lingua. `scripts/screenshots.mjs` genera due set (`SHOTS_LANG=en|it`) in `docs/images/en` e `docs/images/it`, con pannello e sito nella rispettiva lingua. Aggiunte istruzioni per Windows (PowerShell) e la spiegazione dell'immagine su GHCR.
+- **Correzioni emerse:** nella tabella di troubleshooting `restart app` non svuota la cache delle pagine → ora `up -d --force-recreate app`; un `|` nel codice rompeva la tabella; la descrizione inglese del campo slug citava un esempio sbagliato (lo slug deriva sempre dal titolo italiano).
+- **Prove:** controllo automatico dei link relativi in README, CHANGELOG e `docs/{en,it}` → 0 link rotti; 18 screenshot per lingua verificati a campione.
+- **Decisioni:** `docs/PLAN.md` e `docs/PROGRESS.md` restano in italiano (documenti di lavoro interni); regola aggiunta in `CLAUDE.md` per mantenere allineate le due lingue.
+
 ## 2026-10-12 — M9 Hardening e consegna ✅
 - **Fatto:** aggiornamenti di sicurezza (next 16.3.8, sharp 0.35.5, vitest 4.1, nodemailer 10, override di undici) e step `pnpm audit --audit-level high` in CI; Dependabot (npm settimanale, Actions e Docker mensile); test sui limiti di upload (tipi vietati HTML/SVG/ZIP rifiutati, file oltre `MAX_UPLOAD_MB` rifiutato via REST); rendering progressivo della galleria (24 opere alla volta, scroll o pulsante "Mostra altre opere") e script di stress `src/seed/stress.ts`; stato vuoto di benvenuto per il primo avvio e placeholder visibili nel form; `.dockerignore` che esclude design, docs, test, script e file di sviluppo; `CHANGELOG.md` 1.0.0.
 - **Prove:**

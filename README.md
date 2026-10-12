@@ -1,89 +1,95 @@
 # Portfolio Artist
 
-Sito portfolio **generico e personalizzabile** per artisti professionisti, con un **pannello di amministrazione semplice** da cui l'artista gestisce biografia, opere, categorie e messaggi senza competenze tecniche. Un'installazione = un artista, distribuita con **Docker**.
+**English** · [Italiano](README.it.md)
 
-![Il sito pubblico con il tema Atelier Notturno](docs/images/site-home.jpg)
+A **generic, customizable** portfolio website for professional artists, with a **simple admin panel** where the artist manages biography, artworks, categories and messages without any technical skills. One installation = one artist, shipped with **Docker**.
 
-| Galleria | Schede | Lightbox |
+![The public site with the Atelier Notturno theme](docs/images/en/site-home.jpg)
+
+| Gallery | Cards | Lightbox |
 |---|---|---|
-| ![Vista galleria](docs/images/site-gallery.jpg) | ![Vista schede](docs/images/site-cards.jpg) | ![Lightbox](docs/images/site-lightbox.jpg) |
+| ![Gallery view](docs/images/en/site-gallery.jpg) | ![Cards view](docs/images/en/site-cards.jpg) | ![Lightbox](docs/images/en/site-lightbox.jpg) |
 
-| Pannello: benvenuto | Pannello: modifica di un'opera | Mobile |
+| Admin: welcome | Admin: editing an artwork | Mobile |
 |---|---|---|
-| ![Dashboard admin](docs/images/admin-dashboard.jpg) | ![Modifica opera](docs/images/admin-artwork-edit.jpg) | ![Sito su mobile](docs/images/site-mobile.jpg) |
+| ![Admin dashboard](docs/images/en/admin-dashboard.jpg) | ![Editing an artwork](docs/images/en/admin-artwork-edit.jpg) | ![Site on mobile](docs/images/en/site-mobile.jpg) |
 
-## Cosa offre
+## Features
 
-- **Sito one-page** (Biografia → Opere → Contatti) con il tema *Atelier Notturno*: sidebar fissa, filtri per categoria, vista Galleria o Schede, lightbox con tastiera e swipe, pagina dedicata per ogni opera.
-- **Italiano e inglese**: contenuti traducibili dal pannello, URL `/it/…` e `/en/…`, lingua scelta in base al browser.
-- **Pannello in italiano** (Payload CMS su `/admin`): pulsanti grandi per le azioni frequenti, caricamento di più immagini insieme, ordinamento con drag & drop, bozze e anteprima, messaggi dal form contatti.
-- **Personalizzazione** da *Impostazioni del sito*: colore principale, caratteri, logo, icona, vista predefinita delle opere, prezzi, modulo contatti, testi SEO, privacy, statistiche senza cookie (Plausible/Umami).
-- **SEO**: metadata e Open Graph per pagina, `hreflang`, sitemap multilingua, `robots.txt`, dati strutturati `Person` e `VisualArtwork`. Lighthouse mobile ≥ 95 in tutte le categorie con i dati demo.
-- **Produzione**: immagine Docker standalone non-root, migrazioni automatiche all'avvio, backup giornalieri di database e immagini, header di sicurezza. Il TLS resta al tuo reverse proxy.
+- **One-page site** (Biography → Works → Contact) with the *Atelier Notturno* theme: fixed sidebar, category filters, Gallery or Cards view, lightbox with keyboard and swipe, a dedicated page for every artwork.
+- **Italian and English**: content translatable from the admin, `/it/…` and `/en/…` URLs, language picked from the browser.
+- **Admin panel** (Payload CMS at `/admin`, in Italian or English following the browser): big buttons for frequent tasks, multi-image upload, drag & drop ordering, drafts and preview, contact form messages.
+- **Customization** from *Site settings*: accent color, fonts, logo, icon, default works view, prices, contact form, SEO texts, privacy policy, cookie-less analytics (Plausible/Umami).
+- **SEO**: per-page metadata and Open Graph, `hreflang`, multilingual sitemap, `robots.txt`, `Person` and `VisualArtwork` structured data. Lighthouse mobile ≥ 95 in every category with the demo data.
+- **Production**: non-root standalone Docker image, automatic database migrations at startup, daily backups of database and images, security headers. TLS stays with your reverse proxy.
 
-## Avvio rapido (sviluppo)
+## Quick start (development)
 
-Servono Node 24, pnpm (via `corepack enable`) e Docker (oppure PostgreSQL locale).
+You need Node 24, pnpm (via `corepack enable`) and Docker (or a local PostgreSQL).
 
 ```bash
+git clone https://github.com/Ruy41321/portfolio-artist.git
+cd portfolio-artist
 pnpm install
-cp .env.example .env        # imposta PAYLOAD_SECRET (openssl rand -hex 32)
-./scripts/dev-db.sh         # avvia PostgreSQL e crea i database portfolio e portfolio_test
-pnpm seed                   # migrazioni + dati demo (imposta SEED_ADMIN_EMAIL/PASSWORD per un utente demo)
-pnpm dev                    # http://localhost:3000 e http://localhost:3000/admin
+cp .env.example .env        # set PAYLOAD_SECRET (openssl rand -hex 32)
+./scripts/dev-db.sh         # starts PostgreSQL and creates the portfolio and portfolio_test databases
+pnpm seed                   # migrations + demo data (set SEED_ADMIN_EMAIL/PASSWORD for a demo user)
+pnpm dev                    # http://localhost:3000 and http://localhost:3000/admin
 ```
 
-Senza `SEED_ADMIN_*` il primo accesso a `/admin` chiede di creare l'utente.
+Without `SEED_ADMIN_*` the first visit to `/admin` asks you to create the user.
 
-Verifiche:
+**On Windows** use PowerShell (you need Docker Desktop and Node 24; run `corepack enable` once in an administrator PowerShell, or `npm install -g pnpm@10`). Use `Copy-Item .env.example .env` instead of `cp` and `docker compose up -d postgres` instead of `./scripts/dev-db.sh`: on first start it creates both `portfolio` and `portfolio_test`. The `.sh` scripts (setup, backup, restore) need Git Bash or WSL.
+
+Checks:
 
 ```bash
-pnpm lint && pnpm typecheck && pnpm test   # unit + integrazione (DB di test)
-pnpm test:e2e                              # Playwright su build di produzione
+pnpm lint && pnpm typecheck && pnpm test   # unit + integration (test database)
+pnpm test:e2e                              # Playwright against a production build
 ```
 
-## Deploy in 5 passi
+## Deploy in 5 steps
 
-Su un server con Docker e un reverse proxy che gestisce HTTPS (dettagli ed esempi in [docs/DEPLOY.md](docs/DEPLOY.md)):
+On a server with Docker and a reverse proxy handling HTTPS (details and examples in [docs/en/DEPLOY.md](docs/en/DEPLOY.md)):
 
-1. Copia sul server `compose.prod.yml`, la cartella `docker/backup/` e la cartella `scripts/` (oppure clona il repository).
-2. Genera la configurazione: `./scripts/setup.sh` (chiede l'indirizzo pubblico e la porta locale, crea `.env` con segreti casuali).
-3. Avvia: `docker compose -f compose.prod.yml up -d` (usa l'immagine `ghcr.io/ruy41321/portfolio-artist`; aggiungi `--build` per costruirla dal sorgente).
-4. Configura il reverse proxy verso `http://127.0.0.1:APP_PORT` (esempi per nginx, Caddy e Traefik in DEPLOY.md).
-5. Apri `https://tuo-dominio/admin`, crea l'utente dell'artista e consegna la [guida per l'artista](docs/GUIDA-ARTISTA.md).
+1. Copy `compose.prod.yml`, the `docker/backup/` folder and the `scripts/` folder to the server (or clone the repository).
+2. Generate the configuration: `./scripts/setup.sh` (asks for the public address and the local port, creates `.env` with random secrets).
+3. Start: `docker compose -f compose.prod.yml up -d` (uses the `ghcr.io/ruy41321/portfolio-artist` image, published to GitHub Container Registry on every `v*` tag; add `--build` to build it from source).
+4. Point your reverse proxy to `http://127.0.0.1:APP_PORT` (nginx, Caddy and Traefik examples in DEPLOY.md).
+5. Open `https://your-domain/admin`, create the artist's user and hand over the [artist guide](docs/en/ARTIST-GUIDE.md).
 
-## Configurazione
+## Configuration
 
-Tutte le variabili sono documentate in [`.env.example`](.env.example). Le principali:
+Every variable is documented in [`.env.example`](.env.example). The main ones:
 
-| Variabile | Descrizione |
+| Variable | Description |
 |---|---|
-| `NEXT_PUBLIC_SERVER_URL` | Indirizzo pubblico del sito, senza `/` finale (URL assoluti, sitemap, Open Graph, CSRF). Letto all'avvio: la stessa immagine va bene per qualsiasi dominio. |
-| `PAYLOAD_SECRET` | Segreto lungo e casuale per le sessioni. |
-| `DATABASE_URL` / `POSTGRES_*` | Connessione a PostgreSQL (in produzione composta da `POSTGRES_*`). |
-| `APP_PORT`, `APP_BIND` | Porta e interfaccia su cui l'app ascolta (default `127.0.0.1:3000`). |
-| `MAX_UPLOAD_MB` | Dimensione massima dei file caricati. |
-| `SMTP_*`, `CONTACT_EMAIL_TO` | Email facoltativa per il form contatti; senza SMTP i messaggi restano nel pannello. |
-| `BACKUP_INTERVAL_HOURS`, `BACKUP_RETENTION_DAYS`, `BACKUP_DIR` | Frequenza, durata e cartella dei backup. |
+| `NEXT_PUBLIC_SERVER_URL` | Public address of the site, no trailing `/` (absolute URLs, sitemap, Open Graph, CSRF). Read at startup: the same image works for any domain. |
+| `PAYLOAD_SECRET` | Long random secret for sessions. |
+| `DATABASE_URL` / `POSTGRES_*` | PostgreSQL connection (in production built from `POSTGRES_*`). |
+| `APP_PORT`, `APP_BIND` | Port and interface the app listens on (default `127.0.0.1:3000`). |
+| `MAX_UPLOAD_MB` | Maximum size of uploaded files. |
+| `SMTP_*`, `CONTACT_EMAIL_TO` | Optional email for the contact form; without SMTP messages stay in the admin. |
+| `BACKUP_INTERVAL_HOURS`, `BACKUP_RETENTION_DAYS`, `BACKUP_DIR` | Backup frequency, retention and folder. |
 
-## Aggiornamento
+## Updating
 
 ```bash
 docker compose -f compose.prod.yml pull
 docker compose -f compose.prod.yml up -d
 ```
 
-Le migrazioni del database vengono applicate automaticamente all'avvio. Prima di aggiornare conviene fare un backup: `./scripts/backup.sh`.
+Database migrations run automatically at startup. Take a backup before updating: `./scripts/backup.sh`.
 
-## Documentazione
+## Documentation
 
-- [docs/DEPLOY.md](docs/DEPLOY.md) — installazione su server, reverse proxy, Aruba, backup e ripristino, risoluzione problemi
-- [docs/GUIDA-ARTISTA.md](docs/GUIDA-ARTISTA.md) — guida al pannello per l'artista
-- [docs/CUSTOMIZZAZIONE.md](docs/CUSTOMIZZAZIONE.md) — nuovi temi, nuovi campi, nuove lingue
-- [docs/PLAN.md](docs/PLAN.md) e [docs/PROGRESS.md](docs/PROGRESS.md) — piano e diario di sviluppo
+- [docs/en/DEPLOY.md](docs/en/DEPLOY.md) — server installation, reverse proxy, Aruba, backup and restore, troubleshooting
+- [docs/en/ARTIST-GUIDE.md](docs/en/ARTIST-GUIDE.md) — admin guide for the artist
+- [docs/en/CUSTOMIZATION.md](docs/en/CUSTOMIZATION.md) — new themes, new fields, new languages
 - [CHANGELOG.md](CHANGELOG.md)
+- Development plan and log (Italian): [docs/PLAN.md](docs/PLAN.md), [docs/PROGRESS.md](docs/PROGRESS.md)
 
-Le bozze di layout originali sono in [`design/drafts/`](design/drafts/) (`python -m http.server 5500 --directory design/drafts`).
+The original layout drafts are in [`design/drafts/`](design/drafts/) (`python -m http.server 5500 --directory design/drafts`).
 
 ## Stack
 
