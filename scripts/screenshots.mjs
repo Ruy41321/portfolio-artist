@@ -18,7 +18,12 @@ const browser = await chromium.launch({
 
 async function shot(page, name, options = {}) {
   await page.waitForTimeout(400)
-  await page.screenshot({ path: path.join(out, `${name}.jpg`), type: 'jpeg', quality: 80, ...options })
+  await page.screenshot({
+    path: path.join(out, `${name}.jpg`),
+    type: 'jpeg',
+    quality: 80,
+    ...options,
+  })
   console.log('saved', name)
 }
 
