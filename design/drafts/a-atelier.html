@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bozza A — Atelier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/placeholders.css">
+<style>
+  :root { --bg: #fbfaf8; --fg: #1a1a1a; --muted: #8a8580; --line: #e7e3dd; --accent: #b4532a; --side: 280px; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 300 15px/1.6 Inter, system-ui, sans-serif; }
+  a { color: inherit; text-decoration: none; }
+
+  aside { position: fixed; inset: 0 auto 0 0; width: var(--side); padding: 48px 40px; display: flex; flex-direction: column; border-right: 1px solid var(--line); background: var(--bg); }
+  .name { font-size: 1.35rem; font-weight: 500; letter-spacing: -.01em; line-height: 1.2; }
+  .tag { color: var(--muted); font-size: .85rem; margin-top: 6px; }
+  nav { margin-top: 56px; display: grid; gap: 10px; }
+  nav a { color: var(--muted); transition: color .2s; }
+  nav a:hover, nav a.active { color: var(--fg); }
+  nav a.active::before { content: "— "; color: var(--accent); }
+  .side-foot { margin-top: auto; font-size: .8rem; color: var(--muted); display: grid; gap: 6px; }
+  .lang button { background: none; border: 0; padding: 0; font: inherit; color: var(--muted); cursor: pointer; }
+  .lang button.on { color: var(--fg); font-weight: 500; }
+
+  main { margin-left: var(--side); padding: 48px 56px 96px; }
+  .filters { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 36px; font-size: .9rem; }
+  .filters button { background: none; border: 0; padding: 0 0 4px; font: inherit; color: var(--muted); cursor: pointer; border-bottom: 1px solid transparent; }
+  .filters button.on { color: var(--fg); border-color: var(--fg); }
+
+  .masonry { columns: 3 280px; column-gap: 28px; }
+  .card { break-inside: avoid; margin-bottom: 36px; cursor: zoom-in; }
+  .card .art { width: 100%; transition: opacity .3s; }
+  .card:hover .art { opacity: .88; }
+  .card .cap { display: flex; justify-content: space-between; margin-top: 10px; font-size: .85rem; }
+  .card .cap span:last-child { color: var(--muted); }
+
+  section.page { max-width: 760px; padding-top: 96px; }
+  section.page h2 { font-weight: 400; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 28px; }
+  .about { display: grid; grid-template-columns: 220px 1fr; gap: 40px; align-items: start; }
+  .about .portrait { aspect-ratio: 3/4; }
+  .about p { font-size: 1.05rem; margin-top: 0; }
+  .cv { margin-top: 40px; display: grid; grid-template-columns: 70px 1fr; gap: 8px 20px; font-size: .9rem; }
+  .cv b { font-weight: 500; }
+  form { display: grid; gap: 14px; max-width: 520px; }
+  input, textarea { font: inherit; padding: 12px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--fg); outline: none; }
+  input:focus, textarea:focus { border-color: var(--fg); }
+  .btn { justify-self: start; margin-top: 10px; padding: 12px 28px; background: var(--fg); color: var(--bg); border: 0; font: inherit; font-weight: 500; cursor: pointer; }
+
+  .burger { display: none; }
+  @media (max-width: 900px) {
+    aside { position: sticky; top: 0; width: auto; height: auto; padding: 18px 20px; flex-direction: row; align-items: center; justify-content: space-between; border-right: 0; border-bottom: 1px solid var(--line); z-index: 10; }
+    .tag, .side-foot { display: none; }
+    nav { display: none; }
+    nav.show { display: grid; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg); padding: 20px; border-bottom: 1px solid var(--line); margin: 0; }
+    .burger { display: block; background: none; border: 0; font: inherit; cursor: pointer; }
+    main { margin: 0; padding: 24px 20px 72px; }
+    .about { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<aside>
+  <div>
+    <a href="#" class="name" id="name"></a>
+    <div class="tag" id="tag"></div>
+  </div>
+  <button class="burger" onclick="document.querySelector('nav').classList.toggle('show')">Menu</button>
+  <nav>
+    <a href="#works" class="active">Lavori</a>
+    <a href="#works">Serie</a>
+    <a href="#about">Biografia</a>
+    <a href="#contact">Contatti</a>
+  </nav>
+  <div class="side-foot">
+    <div class="lang"><button class="on">IT</button> / <button>EN</button></div>
+    <a href="#">Instagram</a>
+    <a href="#">studio@example.com</a>
+    <span>© 2026</span>
+  </div>
+</aside>
+
+<main>
+  <div id="works">
+    <div class="filters" id="filters"></div>
+    <div class="masonry" id="grid"></div>
+  </div>
+
+  <section class="page" id="about">
+    <h2>Biografia</h2>
+    <div class="about">
+      <div class="art portrait"></div>
+      <div>
+        <p id="bio"></p>
+        <div class="cv">
+          <b>2025</b><span>“Acque”, personale — Galleria Esempio, Milano</span>
+          <b>2024</b><span>Premio Arti Visive, finalista — Torino</span>
+          <b>2023</b><span>“Bussole”, collettiva — Spazio Nove, Bologna</span>
+          <b>2021</b><span>Diploma in Pittura — Accademia di Brera</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="contact">
+    <h2>Contatti</h2>
+    <p style="max-width:520px">Per commissioni, disponibilità delle opere o collaborazioni scrivimi qui.</p>
+    <form onsubmit="event.preventDefault(); this.querySelector('.btn').textContent='Inviato ✓'">
+      <input placeholder="Nome" required>
+      <input placeholder="Email" type="email" required>
+      <textarea rows="4" placeholder="Messaggio" required></textarea>
+      <button class="btn">Invia</button>
+    </form>
+  </section>
+</main>
+
+<a class="draft-badge" href="index.html">Bozza A · Atelier ↩</a>
+<script src="shared/data.js"></script>
+<script>
+  document.getElementById("name").textContent = ARTIST.name;
+  document.getElementById("tag").textContent = ARTIST.tagline.it;
+  document.getElementById("bio").textContent = ARTIST.bio.it;
+
+  const cats = ["tutti", ...new Set(WORKS.map(w => w.cat))];
+  const filters = document.getElementById("filters");
+  const grid = document.getElementById("grid");
+  function draw(cat) {
+    grid.innerHTML = WORKS.map((w, i) => (cat === "tutti" || w.cat === cat) ? `
+      <figure class="card" style="margin:0 0 36px" onclick="Lightbox.open(${i})">
+        <div class="art ${w.art} ${w.ratio}"></div>
+        <figcaption class="cap"><span>${w.title}</span><span>${w.year}</span></figcaption>
+      </figure>` : "").join("");
+    filters.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.c === cat));
+  }
+  filters.innerHTML = cats.map(c => `<button data-c="${c}">${c[0].toUpperCase() + c.slice(1)}</button>`).join("");
+  filters.onclick = e => e.target.dataset.c && draw(e.target.dataset.c);
+  draw("tutti");
+</script>
+</body>
+</html>

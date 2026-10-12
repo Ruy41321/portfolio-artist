@@ -1,0 +1,42 @@
+/* Opere segnaposto generate in CSS: nelle bozze sostituiscono le immagini reali. */
+.art { position: relative; overflow: hidden; background: #ddd; }
+.art::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(0,0,0,.05) 1px, transparent 1px); background-size: 3px 3px; mix-blend-mode: multiply; }
+
+.art-1  { background: radial-gradient(circle at 30% 35%, #f2b134 0 18%, transparent 19%), linear-gradient(160deg, #1d3557, #457b9d 60%, #a8dadc); }
+.art-2  { background: linear-gradient(90deg, #e63946 0 33%, #f1faee 33% 66%, #1d3557 66%); }
+.art-3  { background: radial-gradient(ellipse at 70% 80%, #2a9d8f 0 30%, transparent 31%), radial-gradient(circle at 25% 25%, #e9c46a 0 22%, transparent 23%), #264653; }
+.art-4  { background: conic-gradient(from 45deg at 50% 50%, #f4a261, #e76f51, #2a9d8f, #264653, #f4a261); }
+.art-5  { background: linear-gradient(180deg, #fefae0 0 55%, #606c38 55% 70%, #283618 70%); }
+.art-6  { background: radial-gradient(circle at 50% 120%, #ffb4a2 0 45%, transparent 46%), linear-gradient(#6d6875, #b5838d); }
+.art-7  { background: repeating-linear-gradient(115deg, #0b090a 0 14px, #e5e5e5 14px 22px, #ba181b 22px 30px); }
+.art-8  { background: radial-gradient(circle at 35% 40%, #ffffff 0 8%, transparent 9%), radial-gradient(circle at 60% 55%, #cdb4db 0 30%, transparent 31%), linear-gradient(135deg, #a2d2ff, #bde0fe 50%, #ffafcc); }
+.art-9  { background: linear-gradient(135deg, transparent 0 48%, #d62828 48% 52%, transparent 52%), linear-gradient(45deg, #003049 0 50%, #fcbf49 50%); }
+.art-10 { background: radial-gradient(ellipse at 20% 90%, #ccd5ae 0 40%, transparent 41%), radial-gradient(ellipse at 85% 10%, #d4a373 0 35%, transparent 36%), #faedcd; }
+.art-11 { background: linear-gradient(0deg, #14213d 0 30%, transparent 30%), radial-gradient(circle at 70% 40%, #fca311 0 15%, transparent 16%), linear-gradient(#e5e5e5, #ffffff); }
+.art-12 { background: conic-gradient(from 200deg at 30% 70%, #3a0ca3, #7209b7, #f72585, #4cc9f0, #3a0ca3); }
+
+.portrait { background: radial-gradient(ellipse at 50% 38%, #c9a27e 0 17%, transparent 18%), radial-gradient(ellipse at 50% 95%, #3d405b 0 42%, transparent 43%), linear-gradient(#e8e2d6, #cfc6b8); }
+
+.ratio-port  { aspect-ratio: 4 / 5; }
+.ratio-tall  { aspect-ratio: 2 / 3; }
+.ratio-land  { aspect-ratio: 4 / 3; }
+.ratio-wide  { aspect-ratio: 16 / 9; }
+.ratio-sq    { aspect-ratio: 1 / 1; }
+
+/* Lightbox condiviso */
+.lb { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; gap: 48px; padding: 48px; background: var(--lb-bg, rgba(255,255,255,.97)); color: var(--lb-fg, #111); }
+.lb.open { display: flex; }
+.lb .lb-img { width: min(60vw, 900px); max-height: 80vh; aspect-ratio: 4 / 3; }
+.lb .lb-meta { max-width: 320px; }
+.lb .lb-meta h3 { margin: 0 0 8px; font-size: 1.6rem; font-weight: 500; }
+.lb .lb-meta p { margin: 4px 0; opacity: .75; }
+.lb button { position: absolute; background: none; border: 0; color: inherit; font: inherit; font-size: 1.1rem; cursor: pointer; padding: 12px; }
+.lb .lb-close { top: 16px; right: 20px; }
+.lb .lb-prev { left: 12px; top: 50%; }
+.lb .lb-next { right: 12px; top: 50%; }
+@media (max-width: 760px) {
+  .lb { flex-direction: column; gap: 20px; padding: 56px 20px; }
+  .lb .lb-img { width: 100%; }
+}
+
+.draft-badge { position: fixed; bottom: 14px; right: 14px; z-index: 200; padding: 6px 12px; border-radius: 999px; font: 600 12px/1 system-ui, sans-serif; background: #111; color: #fff; opacity: .85; text-decoration: none; }

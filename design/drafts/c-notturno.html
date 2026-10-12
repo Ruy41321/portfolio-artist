@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bozza C — Notturno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/placeholders.css">
+<style>
+  :root { --bg: #0e0e0f; --fg: #efece6; --muted: #8d8a85; --line: #2a2a2c; --accent: #d7ff3a; --lb-bg: rgba(14,14,15,.97); --lb-fg: #efece6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 300 16px/1.6 "Space Grotesk", system-ui, sans-serif; }
+  a { color: inherit; text-decoration: none; }
+  .pad { padding: 0 40px; }
+
+  header { display: flex; justify-content: space-between; align-items: center; height: 72px; font-size: .85rem; text-transform: uppercase; letter-spacing: .08em; position: sticky; top: 0; z-index: 20; background: var(--bg); }
+  header nav { display: flex; gap: 28px; }
+  header nav a:hover { color: var(--accent); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 10px; vertical-align: middle; }
+
+  .title { padding-top: 6vh; padding-bottom: 5vh; }
+  .title h1 { font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(2.2rem, 8.6vw, 11rem); overflow-wrap: anywhere; line-height: .86; letter-spacing: -.04em; margin: 0; text-transform: uppercase; }
+  .title .row { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-top: 28px; flex-wrap: wrap; color: var(--muted); }
+  .title .row p { max-width: 420px; margin: 0; }
+
+  .bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding-top: 18px; padding-bottom: 18px; font-size: .85rem; }
+  .toggle { display: flex; gap: 4px; border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+  .toggle button { background: none; border: 0; color: var(--muted); font: inherit; padding: 6px 16px; border-radius: 999px; cursor: pointer; }
+  .toggle button.on { background: var(--fg); color: var(--bg); }
+
+  .strip { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 12px 40px 40px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+  .strip figure { margin: 0; flex: 0 0 auto; height: 62vh; min-height: 360px; scroll-snap-align: start; cursor: zoom-in; }
+  .strip .art { height: 100%; }
+  .strip figcaption { display: flex; justify-content: space-between; gap: 16px; font-size: .85rem; margin-top: 12px; color: var(--muted); }
+  .strip figcaption b { color: var(--fg); font-weight: 500; }
+  .strip figure:hover b { color: var(--accent); }
+
+  .index { display: none; padding-bottom: 40px; }
+  .index.show { display: block; }
+  .index .row { display: grid; grid-template-columns: 60px 1.4fr 1fr 1fr 80px; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); cursor: pointer; transition: padding .25s, color .2s; }
+  .index .row:hover { color: var(--accent); padding-left: 12px; }
+  .index .row span:not(:nth-child(2)) { color: var(--muted); }
+  .index .row b { font-family: Syne, sans-serif; font-weight: 700; font-size: 1.4rem; line-height: 1.2; }
+  #preview { position: fixed; width: 260px; aspect-ratio: 4/5; pointer-events: none; opacity: 0; transition: opacity .2s; z-index: 30; }
+
+  .about { display: grid; grid-template-columns: 1fr 1fr; min-height: 90vh; border-top: 1px solid var(--line); }
+  .about .portrait { min-height: 60vh; filter: grayscale(1) contrast(1.1); }
+  .about .txt { padding: 72px 56px; display: flex; flex-direction: column; justify-content: center; }
+  .about h2 { font-family: Syne, sans-serif; font-weight: 700; font-size: clamp(2rem, 4vw, 3.4rem); line-height: 1; margin: 0 0 28px; text-transform: uppercase; }
+  .about .big { font-size: 1.3rem; line-height: 1.5; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; border-top: 1px solid var(--line); padding-top: 24px; }
+  .stats b { display: block; font-family: Syne, sans-serif; font-size: 2.4rem; color: var(--accent); line-height: 1; }
+  .stats span { font-size: .8rem; color: var(--muted); }
+
+  .contact { padding-top: 120px; padding-bottom: 48px; }
+  .contact a.mail { display: block; font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(1.6rem, 7vw, 7rem); line-height: 1; overflow-wrap: anywhere; letter-spacing: -.03em; text-transform: uppercase; border-bottom: 2px solid var(--line); padding-bottom: 20px; transition: color .2s; }
+  .contact a.mail:hover { color: var(--accent); }
+  .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: 32px; font-size: .85rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .foot div { display: flex; gap: 24px; }
+
+  @media (max-width: 900px) {
+    .pad { padding: 0 20px; }
+    header nav a:not(:last-child) { display: none; }
+    .strip { padding: 12px 20px 32px; }
+    .strip figure { height: 52vh; min-height: 300px; }
+    .index .row { grid-template-columns: 40px 1fr 70px; }
+    .index .row span:nth-child(3), .index .row span:nth-child(4) { display: none; }
+    .about { grid-template-columns: 1fr; }
+    .about .txt { padding: 48px 20px; }
+    #preview { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="pad">
+  <a href="#"><span class="dot"></span><span id="name"></span></a>
+  <nav><a href="#works">Opere</a><a href="#about">Info</a><a href="#contact">Contatti</a><a href="#">IT/EN</a></nav>
+</header>
+
+<section class="title pad">
+  <h1 id="bigname"></h1>
+  <div class="row">
+    <p id="tag"></p>
+    <span>Scorri ↓</span>
+  </div>
+</section>
+
+<section id="works">
+  <div class="bar pad">
+    <span><span id="count"></span> opere · 2022—2025</span>
+    <div class="toggle"><button class="on" data-v="strip">Galleria</button><button data-v="index">Indice</button></div>
+  </div>
+  <div class="strip" id="strip"></div>
+  <div class="index pad" id="index"></div>
+</section>
+<div id="preview" class="art"></div>
+
+<section class="about" id="about">
+  <div class="art portrait"></div>
+  <div class="txt">
+    <h2>Info</h2>
+    <p class="big" id="bio"></p>
+    <p style="color:var(--muted)">Mostre selezionate: “Acque”, Galleria Esempio, Milano (2025) · Premio Arti Visive, Torino (2024) · “Bussole”, Spazio Nove, Bologna (2023).</p>
+    <div class="stats">
+      <div><b>12</b><span>Mostre</span></div>
+      <div><b>140+</b><span>Opere</span></div>
+      <div><b>6</b><span>Paesi</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="contact pad" id="contact">
+  <div style="color:var(--muted);margin-bottom:20px;text-transform:uppercase;letter-spacing:.08em;font-size:.85rem">Scrivimi ↘</div>
+  <a class="mail" href="#">studio@example.com</a>
+  <div class="foot">
+    <div><a href="#">Instagram</a><a href="#">Behance</a><a href="#">Shop</a></div>
+    <span>© 2026 · Milano</span>
+  </div>
+</section>
+
+<a class="draft-badge" style="background:var(--accent);color:#000" href="index.html">Bozza C · Notturno ↩</a>
+<script src="shared/data.js"></script>
+<script>
+  document.getElementById("name").textContent = ARTIST.name;
+  document.getElementById("bigname").innerHTML = ARTIST.name.replace(" ", "<br>");
+  document.getElementById("tag").textContent = ARTIST.tagline.it + ". " + ARTIST.bio.it.split(".")[0] + ".";
+  document.getElementById("bio").textContent = ARTIST.bio.it;
+  document.getElementById("count").textContent = WORKS.length;
+
+  document.getElementById("strip").innerHTML = WORKS.map((w, i) => `
+    <figure onclick="Lightbox.open(${i})">
+      <div class="art ${w.art} ${w.ratio}"></div>
+      <figcaption><b>${String(i + 1).padStart(2, "0")} — ${w.title}</b><span>${w.year}</span></figcaption>
+    </figure>`).join("");
+
+  document.getElementById("index").innerHTML = WORKS.map((w, i) => `
+    <div class="row" data-art="${w.art}" onclick="Lightbox.open(${i})">
+      <span>${String(i + 1).padStart(2, "0")}</span><b>${w.title}</b><span>${w.tech}</span><span>${w.series}</span><span>${w.year}</span>
+    </div>`).join("");
+
+  const prev = document.getElementById("preview");
+  document.getElementById("index").addEventListener("mousemove", e => {
+    const row = e.target.closest(".row");
+    if (!row) { prev.style.opacity = 0; return; }
+    prev.className = "art " + row.dataset.art;
+    prev.style.left = (e.clientX + 24) + "px";
+    prev.style.top = (e.clientY - 160) + "px";
+    prev.style.opacity = 1;
+  });
+  document.getElementById("index").addEventListener("mouseleave", () => prev.style.opacity = 0);
+
+  document.querySelector(".toggle").onclick = e => {
+    const v = e.target.dataset.v; if (!v) return;
+    document.querySelectorAll(".toggle button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+    document.getElementById("strip").style.display = v === "strip" ? "flex" : "none";
+    document.getElementById("index").classList.toggle("show", v === "index");
+  };
+</script>
+</body>
+</html>
