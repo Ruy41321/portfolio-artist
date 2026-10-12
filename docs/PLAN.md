@@ -166,15 +166,15 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 - [ ] **Scelta del layout** (§2) (umano)
 
 ### M1 — Scaffolding app + Docker dev
-- [ ] Inizializza Next.js + Payload 3 (template `blank`) nella root del repo con TypeScript strict, pnpm, alias `@/`
-- [ ] Configura `@payloadcms/db-postgres`, `sharp` e `PAYLOAD_SECRET`/`DATABASE_URL` da env; scrivi `.env.example` commentato
-- [ ] Imposta `output: 'standalone'` in `next.config` e aggiungi la route `/api/health` (fa un ping al DB)
-- [ ] Configura ESLint (config Next) + Prettier e gli script `lint`, `format`, `typecheck`, `test`, `test:e2e`, `seed`, `generate:types`
-- [ ] Scrivi un `Dockerfile` multi-stage (deps → build → runner con utente non-root) e `docker/entrypoint.sh` (esegue `payload migrate`, poi avvia il server)
-- [ ] Prepara `compose.yml` per lo sviluppo (postgres con healthcheck e volume; app con hot reload montando il sorgente, oppure solo il DB e `pnpm dev` locale: documenta entrambe le opzioni)
-- [ ] Crea `scripts/dev-db.sh`, idempotente: avvia Postgres con Docker se c'è, altrimenti con un'installazione locale (apt), e crea DB e utente di sviluppo e di test. Serve per lavorare in sessioni cloud senza Docker.
-- [ ] Aggiungi la CI GitHub Actions `ci.yml`: install con cache pnpm, lint, typecheck, test (service postgres), `docker build`
-- [ ] Aggiungi un test smoke (Vitest) che avvia Payload sul DB di test e verifica che la config si carichi
+- [x] Inizializza Next.js + Payload 3 (template `blank`) nella root del repo con TypeScript strict, pnpm, alias `@/`
+- [x] Configura `@payloadcms/db-postgres`, `sharp` e `PAYLOAD_SECRET`/`DATABASE_URL` da env; scrivi `.env.example` commentato
+- [x] Imposta `output: 'standalone'` in `next.config` e aggiungi la route `/api/health` (fa un ping al DB)
+- [x] Configura ESLint (config Next) + Prettier e gli script `lint`, `format`, `typecheck`, `test`, `test:e2e`, `seed`, `generate:types`
+- [x] Scrivi un `Dockerfile` multi-stage (deps → build → runner con utente non-root) e `docker/entrypoint.sh` (esegue `payload migrate`, poi avvia il server)
+- [x] Prepara `compose.yml` per lo sviluppo (postgres con healthcheck e volume; app con hot reload montando il sorgente, oppure solo il DB e `pnpm dev` locale: documenta entrambe le opzioni)
+- [x] Crea `scripts/dev-db.sh`, idempotente: avvia Postgres con Docker se c'è, altrimenti con un'installazione locale (apt), e crea DB e utente di sviluppo e di test. Serve per lavorare in sessioni cloud senza Docker.
+- [x] Aggiungi la CI GitHub Actions `ci.yml`: install con cache pnpm, lint, typecheck, test (service postgres), `docker build`
+- [x] Aggiungi un test smoke (Vitest) che avvia Payload sul DB di test e verifica che la config si carichi
 
 **DoD:** `pnpm dev` (con il DB di `scripts/dev-db.sh`) avvia l'app; `/admin` mostra *create first user*; `/api/health` risponde 200; `docker build .` riesce (se Docker è disponibile, altrimenti tramite CI).
 
