@@ -67,8 +67,11 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    artworks: Artwork;
+    categories: Category;
     media: Media;
+    messages: Message;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -76,8 +79,11 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    artworks: ArtworksSelect<false> | ArtworksSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    messages: MessagesSelect<false> | MessagesSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -86,10 +92,16 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
-  locale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('it' | 'en') | ('it' | 'en')[];
+  globals: {
+    profile: Profile;
+    'site-settings': SiteSetting;
+  };
+  globalsSelect: {
+    profile: ProfileSelect<false> | ProfileSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
+  locale: 'it' | 'en';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -118,11 +130,192 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Your works. Drag rows to set their order on the site. A work appears on the site only after "Publish".
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "artworks".
+ */
+export interface Artwork {
+  id: number;
+  _order?: string | null;
+  /**
+   * The title of the work.
+   */
+  title?: string | null;
+  /**
+   * Upload one or more photos. The first one is the cover: drag to reorder.
+   */
+  images?: (number | Media)[] | null;
+  /**
+   * The filter in which the work appears.
+   */
+  category?: (number | null) | Category;
+  /**
+   * Year (e.g. 2025).
+   */
+  year?: number | null;
+  /**
+   * E.g. "Oil on canvas".
+   */
+  technique?: string | null;
+  /**
+   * E.g. "80 × 100 cm". Optional.
+   */
+  dimensions?: string | null;
+  /**
+   * One or two sentences, up to 160 characters. Shown on the cards.
+   */
+  shortDescription?: string | null;
+  /**
+   * The full text, shown on the work page.
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Generated from the title. It appears in the page link (e.g. /en/opere/morning-on-the-lake). Change it only if needed.
+   */
+  slug?: string | null;
+  /**
+   * Shown as a tag on the card.
+   */
+  availability: 'available' | 'sold' | 'private' | 'notForSale';
+  /**
+   * Optional. Visible only if "Show prices" is enabled in Site settings.
+   */
+  price?: number | null;
+  /**
+   * Featured works are used for social previews.
+   */
+  featured?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * All uploaded images and PDFs. You can drop several images at once.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * One sentence on what the image shows. For a PDF write the document title.
+   */
+  alt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumb?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    large?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    og?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * Categories are the filters above the works. Drag rows to change their order on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  _order?: string | null;
+  /**
+   * How it appears in the filter on the site.
+   */
+  name?: string | null;
+  /**
+   * Generated from the title. It appears in the page link (e.g. /en/opere/morning-on-the-lake). Change it only if needed.
+   */
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Messages sent through the contact form. Tick "Read" once handled.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages".
+ */
+export interface Message {
+  id: number;
+  name: string;
+  /**
+   * Reply to this address.
+   */
+  email: string;
+  message: string;
+  locale?: string | null;
+  /**
+   * Tick when read or answered.
+   */
+  read?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * People who can sign in to this panel.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
+  /**
+   * Optional.
+   */
+  name?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -142,25 +335,6 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -187,12 +361,24 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'artworks';
+        value: number | Artwork;
+      } | null)
+    | ({
+        relationTo: 'categories';
+        value: number | Category;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'messages';
+        value: number | Message;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -238,26 +424,36 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "artworks_select".
  */
-export interface UsersSelect<T extends boolean = true> {
+export interface ArtworksSelect<T extends boolean = true> {
+  _order?: T;
+  title?: T;
+  images?: T;
+  category?: T;
+  year?: T;
+  technique?: T;
+  dimensions?: T;
+  shortDescription?: T;
+  description?: T;
+  slug?: T;
+  availability?: T;
+  price?: T;
+  featured?: T;
   updatedAt?: T;
   createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  resetPasswordRequestedAt?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
-    | T
-    | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
-      };
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  _order?: T;
+  name?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -276,6 +472,87 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumb?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        large?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        og?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages_select".
+ */
+export interface MessagesSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  message?: T;
+  locale?: T;
+  read?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  resetPasswordRequestedAt?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -316,6 +593,266 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Who you are: name, biography, photo and CV, shown in the Biography section.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profile".
+ */
+export interface Profile {
+  id: number;
+  /**
+   * The name shown at the top of the site.
+   */
+  name: string;
+  /**
+   * One line under your name.
+   */
+  tagline?: string | null;
+  /**
+   * A photo of you. Shown in black and white.
+   */
+  portrait?: (number | null) | Media;
+  /**
+   * Tell who you are and how you work.
+   */
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional. A short statement, shown highlighted.
+   */
+  statement?: string | null;
+  /**
+   * E.g. "Milan, Italy".
+   */
+  location?: string | null;
+  /**
+   * Exhibitions, awards and education. One row per entry; drag to reorder.
+   */
+  cv?:
+    | {
+        /**
+         * E.g. 2024 or 2019–2021.
+         */
+        year: string;
+        type: 'exhibition' | 'award' | 'education' | 'other';
+        /**
+         * E.g. "Solo show, Aurora Gallery, Turin".
+         */
+        text?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional. Adds a "Download CV" link.
+   */
+  cvPdf?: (number | null) | Media;
+  /**
+   * Shown on the site. Contact form messages are sent here when email is configured.
+   */
+  email?: string | null;
+  /**
+   * A short invitation text.
+   */
+  contactIntro?: string | null;
+  /**
+   * Your social profiles, shown in the menu.
+   */
+  socials?:
+    | {
+        platform:
+          | 'instagram'
+          | 'facebook'
+          | 'x'
+          | 'threads'
+          | 'bluesky'
+          | 'tiktok'
+          | 'youtube'
+          | 'vimeo'
+          | 'linkedin'
+          | 'behance'
+          | 'pinterest'
+          | 'website'
+          | 'other';
+        /**
+         * E.g. https://instagram.com/yourname
+         */
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Site appearance, options and legal texts.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  /**
+   * The style of the site.
+   */
+  theme: 'atelier-notturno';
+  /**
+   * Accent color for details. Format #RRGGBB.
+   */
+  accentColor?: string | null;
+  /**
+   * Site typefaces.
+   */
+  fontPairing: 'inter' | 'fraunces-inter' | 'space-grotesk';
+  /**
+   * Optional. Your name is used otherwise.
+   */
+  logo?: (number | null) | Media;
+  /**
+   * The small browser tab icon. Square PNG 512×512 recommended.
+   */
+  favicon?: (number | null) | Media;
+  /**
+   * How works are shown at first. Visitors can switch.
+   */
+  defaultWorksView: 'gallery' | 'cards';
+  /**
+   * If enabled, prices of available works are shown.
+   */
+  showPrices?: boolean | null;
+  currency?: ('EUR' | 'USD' | 'GBP' | 'CHF') | null;
+  /**
+   * If disabled, only your email is shown.
+   */
+  enableContactForm?: boolean | null;
+  seo?: {
+    /**
+     * Title shown on Google. Defaults to your name.
+     */
+    title?: string | null;
+    /**
+     * One or two sentences shown in search results.
+     */
+    description?: string | null;
+    /**
+     * Image shown when the site is shared. Defaults to a featured work.
+     */
+    image?: (number | null) | Media;
+  };
+  /**
+   * Privacy page text. A default text is shown if empty.
+   */
+  privacy?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Only privacy-friendly, cookie-less services.
+   */
+  analytics?: {
+    provider?: ('none' | 'plausible' | 'umami') | null;
+    /**
+     * Plausible: the domain. Umami: the Website ID.
+     */
+    siteId?: string | null;
+    /**
+     * Optional. Defaults to the official script.
+     */
+    scriptUrl?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profile_select".
+ */
+export interface ProfileSelect<T extends boolean = true> {
+  name?: T;
+  tagline?: T;
+  portrait?: T;
+  bio?: T;
+  statement?: T;
+  location?: T;
+  cv?:
+    | T
+    | {
+        year?: T;
+        type?: T;
+        text?: T;
+        id?: T;
+      };
+  cvPdf?: T;
+  email?: T;
+  contactIntro?: T;
+  socials?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  theme?: T;
+  accentColor?: T;
+  fontPairing?: T;
+  logo?: T;
+  favicon?: T;
+  defaultWorksView?: T;
+  showPrices?: T;
+  currency?: T;
+  enableContactForm?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  privacy?: T;
+  analytics?:
+    | T
+    | {
+        provider?: T;
+        siteId?: T;
+        scriptUrl?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

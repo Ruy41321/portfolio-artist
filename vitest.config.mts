@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     setupFiles: ['./vitest.setup.ts'],
+    globalSetup: ['./tests/globalSetup.ts'],
     include: ['tests/int/**/*.int.spec.ts', 'tests/unit/**/*.test.ts', 'tests/unit/**/*.test.tsx'],
     // Integration tests share one database: run files sequentially.
     fileParallelism: false,
