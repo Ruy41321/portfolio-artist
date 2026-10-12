@@ -18,7 +18,8 @@ export function AboutSection({ dict, profile }: SiteContext) {
             <ArtImage
               image={portrait}
               alt={portrait.alt || `${dict.about.portraitAlt} ${profile.name}`}
-              sizes="(max-width: 900px) 100vw, 220px"
+              sizes="(max-width: 900px) 280px, 220px"
+              priority
             />
           </div>
         )}

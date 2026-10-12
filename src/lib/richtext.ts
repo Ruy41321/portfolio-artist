@@ -26,3 +26,19 @@ export function paragraphs(...texts: string[]): RichTextValue {
     },
   }
 }
+
+/** Plain text of a rich text value (for meta descriptions and structured data). */
+export function richTextToPlain(value: RichTextValue | null | undefined): string {
+  const parts: string[] = []
+  const walk = (node: unknown) => {
+    if (!node || typeof node !== 'object') return
+    const n = node as { text?: unknown; children?: unknown[]; type?: string }
+    if (typeof n.text === 'string') parts.push(n.text)
+    if (Array.isArray(n.children)) {
+      n.children.forEach(walk)
+      if (n.type === 'paragraph' || n.type === 'heading' || n.type === 'listitem') parts.push(' ')
+    }
+  }
+  walk(value?.root)
+  return parts.join('').replace(/\s+/g, ' ').trim()
+}

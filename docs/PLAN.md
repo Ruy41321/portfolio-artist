@@ -217,11 +217,11 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 **DoD:** il sito con i dati di seed riproduce fedelmente la bozza scelta su desktop e mobile; una modifica nell'admin è visibile sul sito senza rebuild.
 
 ### M5 — Contatti, SEO, legale
-- [ ] Form contatti (server action): validazione zod, honeypot, rate limit per IP, salvataggio in Messages, invio email se SMTP è configurato (`@payloadcms/email-nodemailer`)
-- [ ] Metadata per pagina con `generateMetadata`, Open Graph/Twitter con l'immagine dell'opera, canonical
-- [ ] `sitemap.xml` multilingua e `robots.txt`
-- [ ] JSON-LD `Person` per l'artista e `VisualArtwork` per ogni opera
-- [ ] Pagina privacy (da SiteSettings); nessun cookie di profilazione di default, quindi niente banner; analytics opzionali solo privacy-friendly
+- [x] Form contatti (server action): validazione zod, honeypot, rate limit per IP, salvataggio in Messages, invio email se SMTP è configurato (`@payloadcms/email-nodemailer`)
+- [x] Metadata per pagina con `generateMetadata`, Open Graph/Twitter con l'immagine dell'opera, canonical
+- [x] `sitemap.xml` multilingua e `robots.txt`
+- [x] JSON-LD `Person` per l'artista e `VisualArtwork` per ogni opera
+- [x] Pagina privacy (da SiteSettings); nessun cookie di profilazione di default, quindi niente banner; analytics opzionali solo privacy-friendly
 
 **DoD:** Lighthouse SEO ≥ 95 (via `lighthouse` CLI con Chromium di Playwright); JSON-LD valido secondo schema.org (test automatico sulla struttura); il form funziona con e senza SMTP (test di integrazione).
 

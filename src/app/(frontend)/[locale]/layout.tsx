@@ -2,13 +2,27 @@ import type { Metadata, Viewport } from 'next'
 import type { CSSProperties, ReactNode } from 'react'
 
 import { contrastText, normalizeHex } from '@/lib/color'
-import { getSiteSettings } from '@/lib/data'
+import { Analytics } from '@/components/ui/Analytics'
+import { getProfile, getSiteSettings } from '@/lib/data'
+import { asMedia, imageData } from '@/lib/media'
+import { siteTitle } from '@/lib/seo'
 import { getServerURL } from '@/lib/env'
 import { resolveLocale } from '@/lib/site'
 import { fontPairingStyle } from '@/themes/fonts'
 
-export const metadata: Metadata = {
-  metadataBase: new URL(getServerURL()),
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const locale = resolveLocale((await params).locale)
+  const [settings, profile] = await Promise.all([getSiteSettings(locale), getProfile(locale)])
+  const favicon = imageData(asMedia(settings.favicon), 'thumb')
+  return {
+    metadataBase: new URL(getServerURL()),
+    title: { default: siteTitle(profile, settings), template: `%s` },
+    icons: favicon ? { icon: favicon.url, apple: favicon.url } : undefined,
+  }
 }
 
 export const viewport: Viewport = {
@@ -42,7 +56,10 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className={fonts.className} style={style}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics settings={settings} />
+      </body>
     </html>
   )
 }

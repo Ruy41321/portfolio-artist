@@ -63,6 +63,7 @@ const it = {
   footer: { rights: 'Tutti i diritti riservati', privacy: 'Privacy' },
   privacy: {
     title: 'Informativa privacy',
+    description: 'Come vengono trattati i dati personali su questo sito.',
     fallback:
       'Questo sito non usa cookie di profilazione. I dati inviati con il modulo contatti sono usati solo per rispondere al messaggio.',
   },
@@ -143,6 +144,7 @@ const en: Dictionary = {
   footer: { rights: 'All rights reserved', privacy: 'Privacy' },
   privacy: {
     title: 'Privacy policy',
+    description: 'How personal data is handled on this website.',
     fallback:
       'This website does not use profiling cookies. Data sent through the contact form is used only to reply to your message.',
   },

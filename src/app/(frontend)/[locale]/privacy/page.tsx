@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { getDictionary } from '@/i18n/dictionaries'
+import { alternates } from '@/lib/seo'
 import { getSiteContext, resolveLocale } from '@/lib/site'
 import { getTheme } from '@/themes'
 
@@ -10,11 +11,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = resolveLocale((await params).locale)
   const { profile } = await getSiteContext(locale)
   return {
-    title: `${getDictionary(locale).privacy.title} — ${profile.name}`,
-    alternates: {
-      canonical: `/${locale}/privacy`,
-      languages: { it: '/it/privacy', en: '/en/privacy', 'x-default': '/it/privacy' },
-    },
+    title: { absolute: `${getDictionary(locale).privacy.title} — ${profile.name}` },
+    description: getDictionary(locale).privacy.description,
+    alternates: alternates(locale, '/privacy'),
   }
 }
 

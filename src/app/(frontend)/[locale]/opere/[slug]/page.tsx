@@ -2,7 +2,10 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { artworkSegment } from '@/i18n/dictionaries'
+import { JsonLd } from '@/components/ui/JsonLd'
 import { getArtworkBySlug, getArtworks } from '@/lib/data'
+import { artworkMetadata } from '@/lib/seo'
+import { artworkJsonLd } from '@/lib/structured-data'
 import { getSiteContext, resolveLocale } from '@/lib/site'
 import { getTheme } from '@/themes'
 
@@ -21,15 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getSiteContext(locale),
   ])
   if (!artwork) return {}
-  const path = `/${artworkSegment}/${slug}`
-  return {
-    title: `${artwork.title} — ${profile.name}`,
-    description: artwork.shortDescription || undefined,
-    alternates: {
-      canonical: `/${locale}${path}`,
-      languages: { it: `/it${path}`, en: `/en${path}`, 'x-default': `/it${path}` },
-    },
-  }
+  return artworkMetadata(locale, artwork, profile)
 }
 
 export default async function ArtworkRoute({ params }: Props) {
@@ -49,6 +44,7 @@ export default async function ArtworkRoute({ params }: Props) {
 
   return (
     <theme.Layout {...context} currentPath={`/${artworkSegment}/${slug}`}>
+      <JsonLd data={artworkJsonLd(locale, artwork, context.profile)} />
       <theme.ArtworkPage {...context} artwork={artwork} previous={previous} next={next} />
     </theme.Layout>
   )
