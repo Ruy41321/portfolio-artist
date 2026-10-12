@@ -1,0 +1,41 @@
+# Only what `next build` needs goes into the build context.
+
+# VCS, CI and editor settings
+.git
+.github
+.claude
+.vscode
+.idea
+.editorconfig
+.gitattributes
+
+# Dependencies and build output (installed/built inside the image)
+node_modules
+.next
+
+# Secrets and local data
+.env
+.env.*
+!.env.example
+media
+backups
+.e2e-media
+
+# Design drafts, documentation and tests
+design
+docs
+*.md
+tests
+coverage
+test-results
+playwright-report
+playwright.config.ts
+vitest.config.mts
+vitest.setup.ts
+
+# Development and deployment files not used by the build
+scripts
+compose.yml
+compose.prod.yml
+.prettierrc.json
+.prettierignore

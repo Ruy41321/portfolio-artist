@@ -12,16 +12,21 @@ Portfolio web generico per artisti professionisti: un sito pubblico personalizza
 Next.js (App Router) + Payload CMS 3 (admin su `/admin`) · PostgreSQL 17 · TypeScript strict · pnpm · Node 24 LTS · Docker / Compose (TLS gestito esternamente) · Vitest + Playwright · GitHub Actions.
 
 ## Comandi
-<!-- Aggiornare in M1 quando gli script esistono davvero -->
 ```bash
 pnpm install
-docker compose up -d postgres   # solo DB, poi:
+cp .env.example .env            # poi imposta PAYLOAD_SECRET
+./scripts/dev-db.sh             # Postgres (Docker se c'è, altrimenti apt) + DB portfolio e portfolio_test
 pnpm dev                        # http://localhost:3000 e /admin
-pnpm lint && pnpm typecheck && pnpm test
-pnpm test:e2e
-pnpm seed                       # dati demo
-pnpm payload migrate:create <nome>
-docker compose up --build       # stack completo
+pnpm lint && pnpm typecheck && pnpm test   # test su TEST_DATABASE_URL
+pnpm format                     # Prettier
+pnpm test:e2e                   # build + server su :3100 con DB di test seedato (PLAYWRIGHT_CHROMIUM_PATH facoltativo)
+pnpm build && pnpm start        # server standalone come in produzione
+pnpm seed                       # applica le migrazioni + dati demo (idempotente)
+pnpm payload migrate            # applica le migrazioni
+pnpm payload migrate:create <nome>   # dopo ogni modifica allo schema
+docker compose --profile app up # stack di sviluppo completo (hot reload)
+./scripts/setup.sh && docker compose -f compose.prod.yml up -d --build   # produzione
+./scripts/backup.sh · ./scripts/restore.sh <db.dump> [media.tar.gz]
 ```
 Bozze di design: `python -m http.server 5500 --directory design/drafts`.
 
@@ -35,3 +40,13 @@ Bozze di design: `python -m http.server 5500 --directory design/drafts`.
 - Prima di usare un'API Payload/Next verifica la documentazione della versione installata.
 - Se nella sessione non c'è Docker o Postgres, verifica tramite la CI (`gh run watch`).
 - A fine milestone: spunta le checkbox in `docs/PLAN.md`, aggiungi una voce in `docs/PROGRESS.md` e aggiorna questo file se cambiano i comandi.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

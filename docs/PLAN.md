@@ -163,112 +163,112 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 - [x] Repo GitHub privata, `.gitignore`, `.gitattributes`, `.editorconfig`
 - [x] Bozze layout in `design/drafts/`
 - [x] `CLAUDE.md`, `docs/PLAN.md`, `docs/PROGRESS.md`
-- [ ] **Scelta del layout** (§2) (umano)
+- [x] **Scelta del layout** (§2) (umano)
 
 ### M1 — Scaffolding app + Docker dev
-- [ ] Inizializza Next.js + Payload 3 (template `blank`) nella root del repo con TypeScript strict, pnpm, alias `@/`
-- [ ] Configura `@payloadcms/db-postgres`, `sharp` e `PAYLOAD_SECRET`/`DATABASE_URL` da env; scrivi `.env.example` commentato
-- [ ] Imposta `output: 'standalone'` in `next.config` e aggiungi la route `/api/health` (fa un ping al DB)
-- [ ] Configura ESLint (config Next) + Prettier e gli script `lint`, `format`, `typecheck`, `test`, `test:e2e`, `seed`, `generate:types`
-- [ ] Scrivi un `Dockerfile` multi-stage (deps → build → runner con utente non-root) e `docker/entrypoint.sh` (esegue `payload migrate`, poi avvia il server)
-- [ ] Prepara `compose.yml` per lo sviluppo (postgres con healthcheck e volume; app con hot reload montando il sorgente, oppure solo il DB e `pnpm dev` locale: documenta entrambe le opzioni)
-- [ ] Crea `scripts/dev-db.sh`, idempotente: avvia Postgres con Docker se c'è, altrimenti con un'installazione locale (apt), e crea DB e utente di sviluppo e di test. Serve per lavorare in sessioni cloud senza Docker.
-- [ ] Aggiungi la CI GitHub Actions `ci.yml`: install con cache pnpm, lint, typecheck, test (service postgres), `docker build`
-- [ ] Aggiungi un test smoke (Vitest) che avvia Payload sul DB di test e verifica che la config si carichi
+- [x] Inizializza Next.js + Payload 3 (template `blank`) nella root del repo con TypeScript strict, pnpm, alias `@/`
+- [x] Configura `@payloadcms/db-postgres`, `sharp` e `PAYLOAD_SECRET`/`DATABASE_URL` da env; scrivi `.env.example` commentato
+- [x] Imposta `output: 'standalone'` in `next.config` e aggiungi la route `/api/health` (fa un ping al DB)
+- [x] Configura ESLint (config Next) + Prettier e gli script `lint`, `format`, `typecheck`, `test`, `test:e2e`, `seed`, `generate:types`
+- [x] Scrivi un `Dockerfile` multi-stage (deps → build → runner con utente non-root) e `docker/entrypoint.sh` (esegue `payload migrate`, poi avvia il server)
+- [x] Prepara `compose.yml` per lo sviluppo (postgres con healthcheck e volume; app con hot reload montando il sorgente, oppure solo il DB e `pnpm dev` locale: documenta entrambe le opzioni)
+- [x] Crea `scripts/dev-db.sh`, idempotente: avvia Postgres con Docker se c'è, altrimenti con un'installazione locale (apt), e crea DB e utente di sviluppo e di test. Serve per lavorare in sessioni cloud senza Docker.
+- [x] Aggiungi la CI GitHub Actions `ci.yml`: install con cache pnpm, lint, typecheck, test (service postgres), `docker build`
+- [x] Aggiungi un test smoke (Vitest) che avvia Payload sul DB di test e verifica che la config si carichi
 
 **DoD:** `pnpm dev` (con il DB di `scripts/dev-db.sh`) avvia l'app; `/admin` mostra *create first user*; `/api/health` risponde 200; `docker build .` riesce (se Docker è disponibile, altrimenti tramite CI).
 
 ### M2 — Modello dati + localizzazione
-- [ ] Configura `localization` con `it` (default) ed `en` e fallback attivo
-- [ ] Imposta l'admin in italiano (`i18n.supportedLanguages` it + en, fallback it)
-- [ ] Crea le collections Users, Media, Artworks, Categories e Messages come da §3
-- [ ] Crea i globals Profile e SiteSettings come da §3
-- [ ] Configura l'access control: lettura pubblica solo per i documenti pubblicati; scrittura solo per gli utenti autenticati; Messages creabile dal pubblico solo tramite la server action del form
-- [ ] Genera i tipi con `payload generate:types` e crea la prima migrazione con `payload migrate:create initial`
-- [ ] Scrivi lo script di seed `pnpm seed`: profilo demo, 4 categorie e 12 opere con immagini segnaposto generate (es. con sharp, ispirate a `design/drafts/shared/placeholders.css`). Lo script deve essere idempotente.
-- [ ] Scrivi i test di integrazione (Vitest + Local API): creazione di un'opera, slug unico, opera in bozza non visibile al pubblico, campi localizzati; categorie: rinomina riflessa nei filtri, categoria senza opere pubblicate esclusa dai filtri, eliminazione di una categoria con opere gestita senza errori
+- [x] Configura `localization` con `it` (default) ed `en` e fallback attivo
+- [x] Imposta l'admin in italiano (`i18n.supportedLanguages` it + en, fallback it)
+- [x] Crea le collections Users, Media, Artworks, Categories e Messages come da §3
+- [x] Crea i globals Profile e SiteSettings come da §3
+- [x] Configura l'access control: lettura pubblica solo per i documenti pubblicati; scrittura solo per gli utenti autenticati; Messages creabile dal pubblico solo tramite la server action del form
+- [x] Genera i tipi con `payload generate:types` e crea la prima migrazione con `payload migrate:create initial`
+- [x] Scrivi lo script di seed `pnpm seed`: profilo demo, 4 categorie e 12 opere con immagini segnaposto generate (es. con sharp, ispirate a `design/drafts/shared/placeholders.css`). Lo script deve essere idempotente.
+- [x] Scrivi i test di integrazione (Vitest + Local API): creazione di un'opera, slug unico, opera in bozza non visibile al pubblico, campi localizzati; categorie: rinomina riflessa nei filtri, categoria senza opere pubblicate esclusa dai filtri, eliminazione di una categoria con opere gestita senza errori
 
 **DoD:** il seed popola il DB; nell'admin si vedono tutte le sezioni in italiano; test verdi.
 
 ### M3 — Admin UX per artista non tecnico
-- [ ] Crea una dashboard custom con messaggio di benvenuto con il nome dell'artista e pulsanti grandi: *Aggiungi opera*, *Carica più immagini*, *Modifica profilo*, *Vedi il sito*, oltre al conteggio dei messaggi non letti
-- [ ] Organizza la navigazione admin in gruppi chiari (*Portfolio*: Opere, Categorie; *Il mio profilo*; *Messaggi*; *Impostazioni*) e nascondi ciò che non serve
-- [ ] Abilita il bulk upload su Media e la creazione rapida di un'opera da un'immagine
-- [ ] Abilita il riordino drag & drop di opere e categorie; la gestione delle categorie (aggiungi, rinomina, elimina con conferma) deve essere semplice e guidata
-- [ ] Attiva la live preview / pulsante *Anteprima* verso la pagina pubblica dell'opera
-- [ ] Riduci il rich text a una toolbar minima (grassetto, corsivo, link, elenchi, titoli h2/h3)
-- [ ] Aggiungi validazioni con messaggi in italiano comprensibile (es. "Aggiungi almeno un'immagine dell'opera")
-- [ ] Applica il branding dell'admin: logo e nome artista da SiteSettings/Profile nella login e nella nav (componenti `graphics`)
+- [x] Crea una dashboard custom con messaggio di benvenuto con il nome dell'artista e pulsanti grandi: *Aggiungi opera*, *Carica più immagini*, *Modifica profilo*, *Vedi il sito*, oltre al conteggio dei messaggi non letti
+- [x] Organizza la navigazione admin in gruppi chiari (*Portfolio*: Opere, Categorie; *Il mio profilo*; *Messaggi*; *Impostazioni*) e nascondi ciò che non serve
+- [x] Abilita il bulk upload su Media e la creazione rapida di un'opera da un'immagine
+- [x] Abilita il riordino drag & drop di opere e categorie; la gestione delle categorie (aggiungi, rinomina, elimina con conferma) deve essere semplice e guidata
+- [x] Attiva la live preview / pulsante *Anteprima* verso la pagina pubblica dell'opera
+- [x] Riduci il rich text a una toolbar minima (grassetto, corsivo, link, elenchi, titoli h2/h3)
+- [x] Aggiungi validazioni con messaggi in italiano comprensibile (es. "Aggiungi almeno un'immagine dell'opera")
+- [x] Applica il branding dell'admin: logo e nome artista da SiteSettings/Profile nella login e nella nav (componenti `graphics`)
 
 **DoD:** un utente senza competenze crea un'opera con 3 immagini e la pubblica in < 2 minuti, senza leggere documentazione (scenario coperto da un test e2e in M6).
 
 ### M4 — Frontend pubblico (tema scelto)
-- [ ] Crea il design system del tema: token CSS (colori, font, spaziature) da SiteSettings, font via `next/font`, reset
-- [ ] Implementa il contratto tema e il resolver del tema attivo (§3 Principi)
-- [ ] Componenti condivisi: `ArtImage` (`next/image` con sizes Payload, blur placeholder, alt), `Lightbox` accessibile (tastiera, focus trap, swipe su mobile), `LocaleSwitch`, `Nav`
-- [ ] Home one-page (Biografia → Opere → Contatti) come da §2, con filtri per categoria, selettore Galleria/Schede e voce di menu attiva che segue lo scroll
-- [ ] Pagina opera `/[locale]/opere/[slug]` e lightbox che aggiorna l'URL
-- [ ] Pagina privacy
-- [ ] Routing i18n: `/it/...` e `/en/...`; la root fa redirect in base ad `Accept-Language`; `hreflang`; dizionario UI per le stringhe fisse
-- [ ] Revalidation on-demand tramite hook Payload
-- [ ] Pagine 404 e di errore curate, coerenti col tema
-- [ ] Responsive da 360px a 2560px; rispetto di `prefers-reduced-motion`
+- [x] Crea il design system del tema: token CSS (colori, font, spaziature) da SiteSettings, font via `next/font`, reset
+- [x] Implementa il contratto tema e il resolver del tema attivo (§3 Principi)
+- [x] Componenti condivisi: `ArtImage` (`next/image` con sizes Payload, blur placeholder, alt), `Lightbox` accessibile (tastiera, focus trap, swipe su mobile), `LocaleSwitch`, `Nav`
+- [x] Home one-page (Biografia → Opere → Contatti) come da §2, con filtri per categoria, selettore Galleria/Schede e voce di menu attiva che segue lo scroll
+- [x] Pagina opera `/[locale]/opere/[slug]` e lightbox che aggiorna l'URL
+- [x] Pagina privacy
+- [x] Routing i18n: `/it/...` e `/en/...`; la root fa redirect in base ad `Accept-Language`; `hreflang`; dizionario UI per le stringhe fisse
+- [x] Revalidation on-demand tramite hook Payload
+- [x] Pagine 404 e di errore curate, coerenti col tema
+- [x] Responsive da 360px a 2560px; rispetto di `prefers-reduced-motion`
 
 **DoD:** il sito con i dati di seed riproduce fedelmente la bozza scelta su desktop e mobile; una modifica nell'admin è visibile sul sito senza rebuild.
 
 ### M5 — Contatti, SEO, legale
-- [ ] Form contatti (server action): validazione zod, honeypot, rate limit per IP, salvataggio in Messages, invio email se SMTP è configurato (`@payloadcms/email-nodemailer`)
-- [ ] Metadata per pagina con `generateMetadata`, Open Graph/Twitter con l'immagine dell'opera, canonical
-- [ ] `sitemap.xml` multilingua e `robots.txt`
-- [ ] JSON-LD `Person` per l'artista e `VisualArtwork` per ogni opera
-- [ ] Pagina privacy (da SiteSettings); nessun cookie di profilazione di default, quindi niente banner; analytics opzionali solo privacy-friendly
+- [x] Form contatti (server action): validazione zod, honeypot, rate limit per IP, salvataggio in Messages, invio email se SMTP è configurato (`@payloadcms/email-nodemailer`)
+- [x] Metadata per pagina con `generateMetadata`, Open Graph/Twitter con l'immagine dell'opera, canonical
+- [x] `sitemap.xml` multilingua e `robots.txt`
+- [x] JSON-LD `Person` per l'artista e `VisualArtwork` per ogni opera
+- [x] Pagina privacy (da SiteSettings); nessun cookie di profilazione di default, quindi niente banner; analytics opzionali solo privacy-friendly
 
 **DoD:** Lighthouse SEO ≥ 95 (via `lighthouse` CLI con Chromium di Playwright); JSON-LD valido secondo schema.org (test automatico sulla struttura); il form funziona con e senza SMTP (test di integrazione).
 
 ### M6 — Test e2e e qualità
-- [ ] Configura Playwright con un server su DB di test seedato
-- [ ] e2e pubblico: ordine delle sezioni Biografia → Opere → Contatti, filtro per categoria, cambio vista Galleria/Schede, lightbox e URL dell'opera, cambio lingua, form contatti
-- [ ] e2e admin: login, creazione opera con immagini, pubblicazione, verifica sul sito (scenario DoD di M3)
-- [ ] Test accessibilità con `@axe-core/playwright` sulle pagine principali (0 violazioni serious/critical)
-- [ ] Aggiungi gli e2e alla CI (job separato, artifact con trace in caso di fallimento)
+- [x] Configura Playwright con un server su DB di test seedato
+- [x] e2e pubblico: ordine delle sezioni Biografia → Opere → Contatti, filtro per categoria, cambio vista Galleria/Schede, lightbox e URL dell'opera, cambio lingua, form contatti
+- [x] e2e admin: login, creazione opera con immagini, pubblicazione, verifica sul sito (scenario DoD di M3)
+- [x] Test accessibilità con `@axe-core/playwright` sulle pagine principali (0 violazioni serious/critical)
+- [x] Aggiungi gli e2e alla CI (job separato, artifact con trace in caso di fallimento)
 
 **DoD:** CI verde con unit, integration ed e2e.
 
 ### M7 — Produzione Docker
-- [ ] `compose.prod.yml` con:
+- [x] `compose.prod.yml` con:
   - `app` (immagine GHCR o build locale, healthcheck, restart, porta `APP_PORT` esposta solo su `127.0.0.1` di default, configurabile)
   - `postgres` (volume, healthcheck, non esposto)
   - `backup`: dump giornaliero di Postgres e archivio del volume media, con retention configurabile
-- [ ] Rendi l'app compatibile con un reverse proxy esterno: `NEXT_PUBLIC_SERVER_URL` usato per URL assoluti, sitemap, OG e CORS/CSRF di Payload; header `X-Forwarded-*` rispettati
-- [ ] Header di sicurezza applicati dall'app (`next.config` headers): CSP compatibile con l'admin Payload, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`. HSTS resta al proxy/TLS esterno.
-- [ ] Cache headers corretti per `/_next/static` e media, così il proxy esterno o il CDN possono fare cache
-- [ ] `scripts/setup.sh`: genera `.env` con segreti casuali e chiede l'URL pubblico del sito
-- [ ] Script di backup e restore documentati e testati (dump → DB pulito → restore → sito identico)
-- [ ] Workflow `release.yml`: su tag `v*` fa build multi-arch (amd64/arm64) e push su `ghcr.io/<owner>/portfolio-artist`
-- [ ] Verifica che l'immagine runner sia minimale e senza devDependencies; annota la dimensione in PROGRESS
+- [x] Rendi l'app compatibile con un reverse proxy esterno: `NEXT_PUBLIC_SERVER_URL` usato per URL assoluti, sitemap, OG e CORS/CSRF di Payload; header `X-Forwarded-*` rispettati
+- [x] Header di sicurezza applicati dall'app (`next.config` headers): CSP compatibile con l'admin Payload, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`. HSTS resta al proxy/TLS esterno.
+- [x] Cache headers corretti per `/_next/static` e media, così il proxy esterno o il CDN possono fare cache
+- [x] `scripts/setup.sh`: genera `.env` con segreti casuali e chiede l'URL pubblico del sito
+- [x] Script di backup e restore documentati e testati (dump → DB pulito → restore → sito identico)
+- [x] Workflow `release.yml`: su tag `v*` fa build multi-arch (amd64/arm64) e push su `ghcr.io/<owner>/portfolio-artist`
+- [x] Verifica che l'immagine runner sia minimale e senza devDependencies; annota la dimensione in PROGRESS
 
 **DoD:** con Docker, `scripts/setup.sh && docker compose -f compose.prod.yml up -d` porta il sito online su `http://localhost:$APP_PORT`, con contenuti persistenti dopo `down`/`up`. Backup e restore sono verificati. Se nella sessione non c'è Docker, verifica con un job CI dedicato (`compose-smoke`) che fa `up`, curl su `/api/health` e `/it`, poi `down`.
 
 ### M8 — Documentazione
-- [ ] `README.md`: cos'è, screenshot (Playwright), quick start dev, deploy in 5 passi, configurazione, aggiornamento (`docker compose pull && up -d`)
-- [ ] `docs/DEPLOY.md`:
+- [x] `README.md`: cos'è, screenshot (Playwright), quick start dev, deploy in 5 passi, configurazione, aggiornamento (`docker compose pull && up -d`)
+- [x] `docs/DEPLOY.md`:
   - (a) server proprio con Docker dietro reverse proxy/TLS esistente, con esempi di config per nginx, Caddy e Traefik che puntano a `APP_PORT`
   - (b) Aruba: chiarisci che serve un prodotto con Docker (Cloud VPS / Cloud Server) e che l'hosting condiviso non supporta app Node/Docker
   - aggiornamenti, backup/restore, troubleshooting
-- [ ] `docs/GUIDA-ARTISTA.md`, in italiano semplice e con screenshot (Playwright): primo accesso, profilo, aggiungere/ordinare opere, gestire le categorie (filtri), traduzioni EN, impostazioni, messaggi
-- [ ] `docs/CUSTOMIZZAZIONE.md`: come creare un nuovo tema, aggiungere un campo, aggiungere una lingua
+- [x] `docs/GUIDA-ARTISTA.md`, in italiano semplice e con screenshot (Playwright): primo accesso, profilo, aggiungere/ordinare opere, gestire le categorie (filtri), traduzioni EN, impostazioni, messaggi
+- [x] `docs/CUSTOMIZZAZIONE.md`: come creare un nuovo tema, aggiungere un campo, aggiungere una lingua
 
 **DoD:** una persona tecnica esterna riesce a fare il deploy seguendo solo i documenti.
 
 ### M9 — Hardening e consegna
-- [ ] Lighthouse mobile ≥ 90 su Performance, Accessibility, Best Practices e SEO (home, opera, bio), misurato con `lighthouse` CLI; risultati in PROGRESS
-- [ ] Audit dipendenze (`pnpm audit`) senza vulnerabilità high/critical; Dependabot configurato
-- [ ] Limiti upload (dimensione, tipi MIME), test di stress della galleria con 200 opere
-- [ ] Verifica del flusso *first run* da DB vuoto (senza seed): il sito mostra uno stato vuoto elegante e l'admin guida l'artista
-- [ ] `.dockerignore` che esclude `design/`, `docs/`, test e file di sviluppo dall'immagine
-- [ ] `CHANGELOG.md` per la versione 1.0.0
-- [ ] **Revisione finale**: rileggi tutte le DoD da M1 a M9 e riesegui la suite completa da zero (DB pulito → migrate → seed → test → e2e); correggi ogni regressione
-- [ ] **Apri la PR finale verso `main`** con il riepilogo descritto in §4
+- [x] Lighthouse mobile ≥ 90 su Performance, Accessibility, Best Practices e SEO (home, opera, bio), misurato con `lighthouse` CLI; risultati in PROGRESS
+- [x] Audit dipendenze (`pnpm audit`) senza vulnerabilità high/critical; Dependabot configurato
+- [x] Limiti upload (dimensione, tipi MIME), test di stress della galleria con 200 opere
+- [x] Verifica del flusso *first run* da DB vuoto (senza seed): il sito mostra uno stato vuoto elegante e l'admin guida l'artista
+- [x] `.dockerignore` che esclude `design/`, `docs/`, test e file di sviluppo dall'immagine
+- [x] `CHANGELOG.md` per la versione 1.0.0
+- [x] **Revisione finale**: rileggi tutte le DoD da M1 a M9 e riesegui la suite completa da zero (DB pulito → migrate → seed → test → e2e); correggi ogni regressione
+- [x] **Apri la PR finale verso `main`** con il riepilogo descritto in §4
 - [ ] Merge, tag `v1.0.0` e release GHCR (umano)
 - [ ] Deploy su server reale (umano)
 

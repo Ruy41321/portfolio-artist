@@ -43,3 +43,4 @@ Thumbs.db
 .claude/settings.local.json
 .claude/.autopilot-state
 .claude/autopilot.on
+/.e2e-media/

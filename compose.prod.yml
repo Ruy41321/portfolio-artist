@@ -1,0 +1,83 @@
+# Production stack: app + PostgreSQL + daily backups.
+# TLS is handled outside this project (existing reverse proxy or hosting panel):
+# point it to http://127.0.0.1:${APP_PORT}.
+#
+#   ./scripts/setup.sh                         # creates .env with random secrets
+#   docker compose -f compose.prod.yml up -d   # starts everything
+#
+# Use a published image (default) or build locally with `--build`.
+
+name: portfolio-artist
+
+services:
+  app:
+    image: ${APP_IMAGE:-ghcr.io/ruy41321/portfolio-artist:latest}
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-portfolio}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/${POSTGRES_DB:-portfolio}
+      MEDIA_DIR: /app/media
+      PORT: '3000'
+    ports:
+      # Bound to localhost by default: only the reverse proxy on this host can reach it.
+      - '${APP_BIND:-127.0.0.1}:${APP_PORT:-3000}:3000'
+    volumes:
+      - media:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:3000/api/health']
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-portfolio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-portfolio}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Not published on the host: only reachable by the other services.
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    entrypoint: ['/bin/sh', '/backup/backup.sh']
+    command: ['loop']
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER:-portfolio}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      PGDATABASE: ${POSTGRES_DB:-portfolio}
+      BACKUP_INTERVAL_HOURS: ${BACKUP_INTERVAL_HOURS:-24}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+    volumes:
+      - ./docker/backup:/backup:ro
+      # The app creates and owns the media volume: the backup only reads it.
+      - type: volume
+        source: media
+        target: /data/media
+        read_only: true
+        volume:
+          nocopy: true
+      - ${BACKUP_DIR:-./backups}:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+      app:
+        condition: service_started
+
+volumes:
+  pgdata:
+  media:
