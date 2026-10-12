@@ -1,12 +1,30 @@
 import path from 'path'
-import type { CollectionConfig } from 'payload'
+import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
+import sharp from 'sharp'
 
 import { anyone, authenticated } from '@/access'
 import { t } from '@/i18n/admin'
 import { requiredInDefaultLocale } from '@/fields/validation'
+import { revalidateCollection, revalidateCollectionDelete } from '@/hooks/revalidate'
 
 export const imageMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif']
 export const documentMimeTypes = ['application/pdf']
+
+/** Stores a tiny blurred preview of each image, used as placeholder while the image loads. */
+const addBlurPlaceholder: CollectionBeforeChangeHook = async ({ data, req }) => {
+  const file = req.file
+  if (!file?.data || !file.mimetype?.startsWith('image/')) return data
+  try {
+    const buffer = await sharp(file.data)
+      .resize(16, 16, { fit: 'inside' })
+      .webp({ quality: 40 })
+      .toBuffer()
+    data.blurDataURL = `data:image/webp;base64,${buffer.toString('base64')}`
+  } catch (error) {
+    req.payload.logger.warn({ msg: 'Could not create blur placeholder', err: error })
+  }
+  return data
+}
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -27,6 +45,11 @@ export const Media: CollectionConfig = {
     create: authenticated,
     update: authenticated,
     delete: authenticated,
+  },
+  hooks: {
+    beforeChange: [addBlurPlaceholder],
+    afterChange: [revalidateCollection('media')],
+    afterDelete: [revalidateCollectionDelete('media')],
   },
   upload: {
     staticDir: process.env.MEDIA_DIR || path.resolve(process.cwd(), 'media'),
@@ -63,6 +86,11 @@ export const Media: CollectionConfig = {
           'One sentence on what the image shows. For a PDF write the document title.',
         ),
       },
+    },
+    {
+      name: 'blurDataURL',
+      type: 'text',
+      admin: { hidden: true },
     },
   ],
 }

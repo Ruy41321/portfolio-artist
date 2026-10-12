@@ -2,6 +2,7 @@ import type { GlobalConfig } from 'payload'
 
 import { anyone, authenticated } from '@/access'
 import { t } from '@/i18n/admin'
+import { revalidateGlobal } from '@/hooks/revalidate'
 import {
   defaultAccentColor,
   defaultFontPairing,
@@ -21,6 +22,9 @@ export const SiteSettings: GlobalConfig = {
       'Aspetto del sito, opzioni e testi legali.',
       'Site appearance, options and legal texts.',
     ),
+  },
+  hooks: {
+    afterChange: [revalidateGlobal('site-settings')],
   },
   access: { read: anyone, update: authenticated },
   fields: [

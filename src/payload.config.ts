@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import {
   BoldFeature,
   FixedToolbarFeature,
@@ -101,6 +102,21 @@ export default buildConfig({
   upload: {
     limits: { fileSize: maxUploadMB * 1024 * 1024 },
   },
+  // Email is optional: without SMTP the contact messages are only stored in the admin.
+  email: process.env.SMTP_HOST
+    ? nodemailerAdapter({
+        defaultFromAddress: process.env.SMTP_FROM_ADDRESS || 'noreply@example.com',
+        defaultFromName: process.env.SMTP_FROM_NAME || 'Portfolio',
+        transportOptions: {
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT || 587),
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: process.env.SMTP_USER
+            ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD }
+            : undefined,
+        },
+      })
+    : undefined,
   sharp,
   telemetry: false,
   plugins: [],

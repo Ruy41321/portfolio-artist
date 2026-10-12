@@ -4,6 +4,7 @@ import { anyone, authenticated } from '@/access'
 import { requiredInDefaultLocale } from '@/fields/validation'
 import { t } from '@/i18n/admin'
 import { previewPath } from '@/lib/preview'
+import { revalidateGlobal } from '@/hooks/revalidate'
 
 export const socialPlatforms = [
   { value: 'instagram', label: 'Instagram' },
@@ -38,6 +39,9 @@ export const Profile: GlobalConfig = {
       'Chi sei: nome, biografia, foto e curriculum. Questi testi compaiono nella sezione Biografia del sito.',
       'Who you are: name, biography, photo and CV, shown in the Biography section.',
     ),
+  },
+  hooks: {
+    afterChange: [revalidateGlobal('profile')],
   },
   access: { read: anyone, update: authenticated },
   fields: [

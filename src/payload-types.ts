@@ -216,6 +216,7 @@ export interface Media {
    * One sentence on what the image shows. For a PDF write the document title.
    */
   alt?: string | null;
+  blurDataURL?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -461,6 +462,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  blurDataURL?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

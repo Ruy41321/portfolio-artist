@@ -203,16 +203,16 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 **DoD:** un utente senza competenze crea un'opera con 3 immagini e la pubblica in < 2 minuti, senza leggere documentazione (scenario coperto da un test e2e in M6).
 
 ### M4 — Frontend pubblico (tema scelto)
-- [ ] Crea il design system del tema: token CSS (colori, font, spaziature) da SiteSettings, font via `next/font`, reset
-- [ ] Implementa il contratto tema e il resolver del tema attivo (§3 Principi)
-- [ ] Componenti condivisi: `ArtImage` (`next/image` con sizes Payload, blur placeholder, alt), `Lightbox` accessibile (tastiera, focus trap, swipe su mobile), `LocaleSwitch`, `Nav`
-- [ ] Home one-page (Biografia → Opere → Contatti) come da §2, con filtri per categoria, selettore Galleria/Schede e voce di menu attiva che segue lo scroll
-- [ ] Pagina opera `/[locale]/opere/[slug]` e lightbox che aggiorna l'URL
-- [ ] Pagina privacy
-- [ ] Routing i18n: `/it/...` e `/en/...`; la root fa redirect in base ad `Accept-Language`; `hreflang`; dizionario UI per le stringhe fisse
-- [ ] Revalidation on-demand tramite hook Payload
-- [ ] Pagine 404 e di errore curate, coerenti col tema
-- [ ] Responsive da 360px a 2560px; rispetto di `prefers-reduced-motion`
+- [x] Crea il design system del tema: token CSS (colori, font, spaziature) da SiteSettings, font via `next/font`, reset
+- [x] Implementa il contratto tema e il resolver del tema attivo (§3 Principi)
+- [x] Componenti condivisi: `ArtImage` (`next/image` con sizes Payload, blur placeholder, alt), `Lightbox` accessibile (tastiera, focus trap, swipe su mobile), `LocaleSwitch`, `Nav`
+- [x] Home one-page (Biografia → Opere → Contatti) come da §2, con filtri per categoria, selettore Galleria/Schede e voce di menu attiva che segue lo scroll
+- [x] Pagina opera `/[locale]/opere/[slug]` e lightbox che aggiorna l'URL
+- [x] Pagina privacy
+- [x] Routing i18n: `/it/...` e `/en/...`; la root fa redirect in base ad `Accept-Language`; `hreflang`; dizionario UI per le stringhe fisse
+- [x] Revalidation on-demand tramite hook Payload
+- [x] Pagine 404 e di errore curate, coerenti col tema
+- [x] Responsive da 360px a 2560px; rispetto di `prefers-reduced-motion`
 
 **DoD:** il sito con i dati di seed riproduce fedelmente la bozza scelta su desktop e mobile; una modifica nell'admin è visibile sul sito senza rebuild.
 

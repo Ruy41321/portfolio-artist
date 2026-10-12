@@ -6,6 +6,7 @@ import { slugField } from '@/fields/slug'
 import { requiredInDefaultLocale } from '@/fields/validation'
 import { t } from '@/i18n/admin'
 import { previewPath } from '@/lib/preview'
+import { revalidateCollection, revalidateCollectionDelete } from '@/hooks/revalidate'
 
 export const availabilityOptions = [
   { value: 'available', label: t('Disponibile', 'Available') },
@@ -37,6 +38,10 @@ export const Artworks: CollectionConfig = {
       'Le tue opere. Trascina le righe per decidere l’ordine sul sito. Un’opera compare sul sito solo dopo "Pubblica".',
       'Your works. Drag rows to set their order on the site. A work appears on the site only after "Publish".',
     ),
+  },
+  hooks: {
+    afterChange: [revalidateCollection('artworks')],
+    afterDelete: [revalidateCollectionDelete('artworks')],
   },
   access: {
     read: publishedOrAuthenticated,
