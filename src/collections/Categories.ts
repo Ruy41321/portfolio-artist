@@ -27,6 +27,13 @@ export const Categories: CollectionConfig = {
   },
   fields: [
     {
+      name: 'usage',
+      type: 'ui',
+      admin: {
+        components: { Field: '@/components/admin/CategoryInfo' },
+      },
+    },
+    {
       name: 'name',
       type: 'text',
       localized: true,

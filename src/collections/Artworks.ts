@@ -1,9 +1,11 @@
 import type { CollectionConfig } from 'payload'
 
 import { authenticated, publishedOrAuthenticated } from '@/access'
+import { artworkFromMedia } from '@/endpoints/artworkFromMedia'
 import { slugField } from '@/fields/slug'
 import { requiredInDefaultLocale } from '@/fields/validation'
 import { t } from '@/i18n/admin'
+import { previewPath } from '@/lib/preview'
 
 export const availabilityOptions = [
   { value: 'available', label: t('Disponibile', 'Available') },
@@ -23,11 +25,14 @@ export const Artworks: CollectionConfig = {
     drafts: true,
     maxPerDoc: 20,
   },
+  endpoints: [artworkFromMedia],
   admin: {
     useAsTitle: 'title',
     group: t('Portfolio', 'Portfolio'),
     defaultColumns: ['title', 'category', 'year', 'availability', '_status'],
     listSearchableFields: ['title', 'technique'],
+    preview: (doc, { locale }) =>
+      typeof doc.slug === 'string' ? previewPath(locale, `/opere/${doc.slug}`) : null,
     description: t(
       'Le tue opere. Trascina le righe per decidere l’ordine sul sito. Un’opera compare sul sito solo dopo "Pubblica".',
       'Your works. Drag rows to set their order on the site. A work appears on the site only after "Publish".',

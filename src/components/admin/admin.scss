@@ -1,0 +1,171 @@
+// Styles for the custom admin components (Payload admin theme variables).
+
+.pa-welcome {
+  margin-bottom: calc(var(--base) * 2);
+
+  &__title {
+    margin: 0 0 calc(var(--base) * 0.25);
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+
+  &__subtitle {
+    margin: 0 0 calc(var(--base) * 1.5);
+    color: var(--theme-elevation-600);
+    font-size: 1.05rem;
+  }
+
+  &__actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: calc(var(--base) * 0.75);
+  }
+
+  &__action {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: calc(var(--base) * 1.1) calc(var(--base) * 1);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--style-radius-m, 8px);
+    background: var(--theme-elevation-50);
+    color: var(--theme-text);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--theme-elevation-400);
+      background: var(--theme-elevation-100);
+    }
+
+    small {
+      color: var(--theme-elevation-600);
+      font-size: 0.85rem;
+      font-weight: 400;
+    }
+
+    &--primary {
+      background: var(--theme-elevation-900);
+      border-color: var(--theme-elevation-900);
+      color: var(--theme-elevation-0);
+
+      small {
+        color: var(--theme-elevation-200);
+      }
+
+      &:hover,
+      &:focus-visible {
+        background: var(--theme-elevation-800);
+        border-color: var(--theme-elevation-800);
+      }
+    }
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    margin-left: 8px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--theme-error-500);
+    color: #fff;
+    font-size: 0.8rem;
+  }
+
+  &__notice {
+    margin-top: calc(var(--base) * 1);
+    padding: calc(var(--base) * 0.75) calc(var(--base) * 1);
+    border-left: 4px solid var(--theme-warning-500);
+    background: var(--theme-warning-100);
+    color: var(--theme-text);
+
+    a {
+      color: inherit;
+      font-weight: 600;
+    }
+  }
+}
+
+.pa-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+
+  &__dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--pa-accent, #d7ff3a);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+  }
+
+  img {
+    max-height: 64px;
+    max-width: 240px;
+    object-fit: contain;
+  }
+}
+
+.pa-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+
+  img {
+    max-width: 28px;
+    max-height: 28px;
+    object-fit: contain;
+  }
+}
+
+.pa-nav-link {
+  display: block;
+  margin: calc(var(--base) * 0.5) 0;
+  color: var(--theme-text);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.pa-info {
+  margin-bottom: calc(var(--base) * 1);
+  padding: calc(var(--base) * 0.75) calc(var(--base) * 1);
+  border-left: 4px solid var(--theme-elevation-400);
+  background: var(--theme-elevation-50);
+
+  &--warning {
+    border-color: var(--theme-warning-500);
+    background: var(--theme-warning-100);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.pa-quick-create {
+  margin: calc(var(--base) * 0.5) 0 calc(var(--base) * 1.5);
+
+  p {
+    margin: 6px 0 0;
+    color: var(--theme-elevation-600);
+    font-size: 0.9rem;
+  }
+}

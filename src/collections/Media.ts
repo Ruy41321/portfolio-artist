@@ -18,6 +18,9 @@ export const Media: CollectionConfig = {
       'All uploaded images and PDFs. You can drop several images at once.',
     ),
     defaultColumns: ['filename', 'alt', 'updatedAt'],
+    components: {
+      beforeListTable: ['@/components/admin/MediaListHint'],
+    },
   },
   access: {
     read: anyone,
@@ -39,6 +42,13 @@ export const Media: CollectionConfig = {
     ],
   },
   fields: [
+    {
+      name: 'quickCreate',
+      type: 'ui',
+      admin: {
+        components: { Field: '@/components/admin/QuickCreateArtwork' },
+      },
+    },
     {
       name: 'alt',
       type: 'text',

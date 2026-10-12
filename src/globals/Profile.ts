@@ -3,6 +3,7 @@ import type { GlobalConfig } from 'payload'
 import { anyone, authenticated } from '@/access'
 import { requiredInDefaultLocale } from '@/fields/validation'
 import { t } from '@/i18n/admin'
+import { previewPath } from '@/lib/preview'
 
 export const socialPlatforms = [
   { value: 'instagram', label: 'Instagram' },
@@ -32,6 +33,7 @@ export const Profile: GlobalConfig = {
   label: t('Il mio profilo', 'My profile'),
   admin: {
     group: t('Il mio profilo', 'My profile'),
+    preview: (_doc, { locale }) => previewPath(locale, ''),
     description: t(
       'Chi sei: nome, biografia, foto e curriculum. Questi testi compaiono nella sezione Biografia del sito.',
       'Who you are: name, biography, photo and CV, shown in the Biography section.',

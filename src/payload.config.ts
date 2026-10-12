@@ -1,5 +1,16 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import {
+  BoldFeature,
+  FixedToolbarFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  ItalicFeature,
+  LinkFeature,
+  OrderedListFeature,
+  ParagraphFeature,
+  UnorderedListFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 import { en } from '@payloadcms/translations/languages/en'
 import { it } from '@payloadcms/translations/languages/it'
 import path from 'path'
@@ -35,6 +46,18 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    avatar: 'default',
+    meta: {
+      titleSuffix: ' · Pannello',
+    },
+    components: {
+      graphics: {
+        Logo: '@/components/admin/BrandLogo',
+        Icon: '@/components/admin/BrandIcon',
+      },
+      beforeDashboard: ['@/components/admin/WelcomePanel'],
+      afterNavLinks: ['@/components/admin/ViewSiteLink'],
+    },
   },
   collections: [Artworks, Categories, Media, Messages, Users],
   globals: [Profile, SiteSettings],
@@ -47,7 +70,20 @@ export default buildConfig({
     supportedLanguages: { it, en },
     fallbackLanguage: 'it',
   },
-  editor: lexicalEditor(),
+  // Minimal rich text toolbar: bold, italic, links, lists and h2/h3 headings.
+  editor: lexicalEditor({
+    features: () => [
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h2', 'h3'] }),
+      BoldFeature(),
+      ItalicFeature(),
+      LinkFeature({ enabledCollections: [] }),
+      UnorderedListFeature(),
+      OrderedListFeature(),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  }),
   secret: secret || 'dev-only-insecure-secret',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

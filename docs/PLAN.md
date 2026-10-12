@@ -191,14 +191,14 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 **DoD:** il seed popola il DB; nell'admin si vedono tutte le sezioni in italiano; test verdi.
 
 ### M3 — Admin UX per artista non tecnico
-- [ ] Crea una dashboard custom con messaggio di benvenuto con il nome dell'artista e pulsanti grandi: *Aggiungi opera*, *Carica più immagini*, *Modifica profilo*, *Vedi il sito*, oltre al conteggio dei messaggi non letti
-- [ ] Organizza la navigazione admin in gruppi chiari (*Portfolio*: Opere, Categorie; *Il mio profilo*; *Messaggi*; *Impostazioni*) e nascondi ciò che non serve
-- [ ] Abilita il bulk upload su Media e la creazione rapida di un'opera da un'immagine
-- [ ] Abilita il riordino drag & drop di opere e categorie; la gestione delle categorie (aggiungi, rinomina, elimina con conferma) deve essere semplice e guidata
-- [ ] Attiva la live preview / pulsante *Anteprima* verso la pagina pubblica dell'opera
-- [ ] Riduci il rich text a una toolbar minima (grassetto, corsivo, link, elenchi, titoli h2/h3)
-- [ ] Aggiungi validazioni con messaggi in italiano comprensibile (es. "Aggiungi almeno un'immagine dell'opera")
-- [ ] Applica il branding dell'admin: logo e nome artista da SiteSettings/Profile nella login e nella nav (componenti `graphics`)
+- [x] Crea una dashboard custom con messaggio di benvenuto con il nome dell'artista e pulsanti grandi: *Aggiungi opera*, *Carica più immagini*, *Modifica profilo*, *Vedi il sito*, oltre al conteggio dei messaggi non letti
+- [x] Organizza la navigazione admin in gruppi chiari (*Portfolio*: Opere, Categorie; *Il mio profilo*; *Messaggi*; *Impostazioni*) e nascondi ciò che non serve
+- [x] Abilita il bulk upload su Media e la creazione rapida di un'opera da un'immagine
+- [x] Abilita il riordino drag & drop di opere e categorie; la gestione delle categorie (aggiungi, rinomina, elimina con conferma) deve essere semplice e guidata
+- [x] Attiva la live preview / pulsante *Anteprima* verso la pagina pubblica dell'opera
+- [x] Riduci il rich text a una toolbar minima (grassetto, corsivo, link, elenchi, titoli h2/h3)
+- [x] Aggiungi validazioni con messaggi in italiano comprensibile (es. "Aggiungi almeno un'immagine dell'opera")
+- [x] Applica il branding dell'admin: logo e nome artista da SiteSettings/Profile nella login e nella nav (componenti `graphics`)
 
 **DoD:** un utente senza competenze crea un'opera con 3 immagini e la pubblica in < 2 minuti, senza leggere documentazione (scenario coperto da un test e2e in M6).
 
