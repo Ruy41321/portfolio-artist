@@ -190,8 +190,7 @@ h3 {
   padding-top: 96px;
   scroll-margin-top: 24px;
 }
-.main > .page:first-child,
-.main > section:first-child {
+.main > section:first-of-type {
   padding-top: 0;
 }
 .page--wide {
@@ -923,4 +922,23 @@ h3 {
   font-family: var(--font-heading);
   font-size: 1.2rem;
   font-weight: 500;
+}
+
+/* Progressive rendering of long galleries. */
+.works-more {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 8px;
+}
+.works-more__button {
+  padding: 10px 24px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.works-more__button:hover {
+  border-color: var(--accent);
+  color: var(--fg);
 }

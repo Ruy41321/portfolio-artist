@@ -20,6 +20,7 @@ export function e2eEnv(): Record<string, string> {
     SEED_ADMIN_PASSWORD: adminUser.password,
     SMTP_HOST: '',
     CONTACT_RATE_LIMIT: '50',
+    MAX_UPLOAD_MB: '5',
     PORT: String(E2E_PORT),
   }
 }

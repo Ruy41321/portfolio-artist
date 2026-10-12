@@ -11,6 +11,11 @@ if (!fs.existsSync(path.join(standalone, 'server.js'))) {
   process.exit(1)
 }
 
+// Start with an empty page/data cache, like a freshly created container.
+for (const dir of ['cache', 'server/route-cache']) {
+  fs.rmSync(path.join(standalone, '.next', dir), { recursive: true, force: true })
+}
+
 fs.cpSync(path.join(root, '.next', 'static'), path.join(standalone, '.next', 'static'), {
   recursive: true,
 })

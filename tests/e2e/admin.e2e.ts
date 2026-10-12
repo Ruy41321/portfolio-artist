@@ -109,4 +109,37 @@ test.describe('Admin', () => {
     const response = await request.get('/it/opere/bozza-nascosta-e2e')
     expect(response.status()).toBe(404)
   })
+
+  test('rejects uploads that are too large or of a forbidden type', async ({ request }) => {
+    const login = await request.post('/api/users/login', { data: adminUser })
+    expect(login.ok()).toBe(true)
+    const { token } = (await login.json()) as { token: string }
+    const headers = { Authorization: `JWT ${token}` }
+
+    // MAX_UPLOAD_MB is 5 in the e2e environment.
+    const big = await sharp({
+      create: { width: 4000, height: 4000, channels: 3, background: { r: 10, g: 20, b: 30 } },
+    })
+      .png({ compressionLevel: 0 })
+      .toBuffer()
+    expect(big.length).toBeGreaterThan(5 * 1024 * 1024)
+    const tooLarge = await request.post('/api/media', {
+      headers,
+      multipart: {
+        file: { name: 'grande.png', mimeType: 'image/png', buffer: big },
+        _payload: JSON.stringify({ alt: 'Troppo grande' }),
+      },
+    })
+    expect(tooLarge.ok()).toBe(false)
+    expect([400, 413]).toContain(tooLarge.status())
+
+    const html = await request.post('/api/media', {
+      headers,
+      multipart: {
+        file: { name: 'pagina.html', mimeType: 'text/html', buffer: Buffer.from('<h1>x</h1>') },
+        _payload: JSON.stringify({ alt: 'HTML' }),
+      },
+    })
+    expect(html.ok()).toBe(false)
+  })
 })

@@ -41,6 +41,7 @@ export function ContactForm({ locale, labels }: Props) {
         <input
           id="contact-name"
           name="name"
+          placeholder={labels.name}
           autoComplete="name"
           required
           maxLength={120}
@@ -58,6 +59,7 @@ export function ContactForm({ locale, labels }: Props) {
         <input
           id="contact-email"
           name="email"
+          placeholder={labels.email}
           type="email"
           autoComplete="email"
           required
@@ -76,6 +78,7 @@ export function ContactForm({ locale, labels }: Props) {
         <textarea
           id="contact-message"
           name="message"
+          placeholder={labels.message}
           rows={5}
           required
           minLength={10}

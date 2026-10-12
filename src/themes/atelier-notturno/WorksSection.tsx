@@ -29,6 +29,7 @@ export function WorksSection({ locale, dict, settings, artworks, categories }: H
             gallery: dict.works.gallery,
             cards: dict.works.cards,
             noResults: dict.works.noResults,
+            showMore: dict.works.showMore,
             lightbox: dict.lightbox,
           }}
         />

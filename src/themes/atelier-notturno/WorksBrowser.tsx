@@ -21,12 +21,15 @@ type Props = {
     gallery: string
     cards: string
     noResults: string
+    showMore: string
     lightbox: { label: string; close: string; previous: string; next: string; details: string }
   }
 }
 
 const VIEW_STORAGE_KEY = 'portfolio.worksView'
 const ALL = 'all'
+/** Works rendered at first and added each time the visitor reaches the end of the grid. */
+const PAGE_SIZE = 24
 
 function readStoredView(): View | null {
   try {
@@ -53,6 +56,8 @@ export function WorksBrowser({ locale, items, categories, defaultView, labels }:
   const [category, setCategory] = useState<string>(ALL)
   const [view, setView] = useState<View>(defaultView)
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [renderCount, setRenderCount] = useState(PAGE_SIZE)
+  const sentinel = useRef<HTMLDivElement>(null)
   const pushedHistory = useRef(false)
   const baseUrl = useRef<string>(`/${locale}`)
 
@@ -75,6 +80,28 @@ export function WorksBrowser({ locale, items, categories, defaultView, labels }:
     () => (category === ALL ? items : items.filter((i) => String(i.categoryId) === category)),
     [category, items],
   )
+
+  const rendered = visible.slice(0, renderCount)
+  const hasMore = renderCount < visible.length
+  const showMore = useCallback(() => setRenderCount((count) => count + PAGE_SIZE), [])
+
+  useEffect(() => {
+    const target = sentinel.current
+    if (!target || !hasMore) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) showMore()
+      },
+      { rootMargin: '800px 0px' },
+    )
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [hasMore, showMore, renderCount])
+
+  const selectCategory = (id: string) => {
+    setCategory(id)
+    setRenderCount(PAGE_SIZE)
+  }
 
   const close = useCallback(() => {
     setOpenIndex(null)
@@ -162,7 +189,7 @@ export function WorksBrowser({ locale, items, categories, defaultView, labels }:
               type="button"
               aria-pressed={category === c.id}
               className={category === c.id ? 'is-on' : undefined}
-              onClick={() => setCategory(c.id)}
+              onClick={() => selectCategory(c.id)}
             >
               {c.name}
             </button>
@@ -208,7 +235,7 @@ export function WorksBrowser({ locale, items, categories, defaultView, labels }:
         <p className="empty-state">{labels.noResults}</p>
       ) : view === 'gallery' ? (
         <ul className="masonry" data-view="gallery">
-          {visible.map((item, index) => (
+          {rendered.map((item, index) => (
             <li key={item.id} className="masonry__item">
               <a href={item.href} className="work-card" onClick={(e) => onCardClick(e, index)}>
                 {item.cover && (
@@ -234,7 +261,7 @@ export function WorksBrowser({ locale, items, categories, defaultView, labels }:
         </ul>
       ) : (
         <ul className="cards" data-view="cards">
-          {visible.map((item, index) => (
+          {rendered.map((item, index) => (
             <li key={item.id}>
               <a href={item.href} className="card" onClick={(e) => onCardClick(e, index)}>
                 <span className="card__thumb">
@@ -271,6 +298,14 @@ export function WorksBrowser({ locale, items, categories, defaultView, labels }:
             </li>
           ))}
         </ul>
+      )}
+
+      {hasMore && (
+        <div ref={sentinel} className="works-more">
+          <button type="button" className="works-more__button" onClick={showMore}>
+            {labels.showMore}
+          </button>
+        </div>
       )}
 
       {openIndex !== null && (

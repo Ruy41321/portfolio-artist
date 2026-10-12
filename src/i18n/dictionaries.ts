@@ -14,6 +14,7 @@ const it = {
     empty: 'Le opere arriveranno presto.',
     emptyHint: 'Torna a trovarci: il portfolio è in preparazione.',
     noResults: 'Nessuna opera in questa categoria.',
+    showMore: 'Mostra altre opere',
     open: 'Apri',
   },
   availability: {
@@ -42,7 +43,12 @@ const it = {
     next: 'Successiva',
     details: 'Scheda completa',
   },
-  about: { downloadCv: 'Scarica il CV (PDF)', portraitAlt: 'Ritratto di' },
+  about: {
+    downloadCv: 'Scarica il CV (PDF)',
+    portraitAlt: 'Ritratto di',
+    emptyTitle: 'Benvenuti.',
+    emptyText: 'Il sito è in allestimento: presto qui troverai biografia e opere.',
+  },
   contact: {
     name: 'Nome',
     email: 'Email',
@@ -95,6 +101,7 @@ const en: Dictionary = {
     empty: 'Works are coming soon.',
     emptyHint: 'Come back soon: the portfolio is being prepared.',
     noResults: 'No works in this category.',
+    showMore: 'Show more works',
     open: 'Open',
   },
   availability: {
@@ -123,7 +130,12 @@ const en: Dictionary = {
     next: 'Next',
     details: 'Full details',
   },
-  about: { downloadCv: 'Download CV (PDF)', portraitAlt: 'Portrait of' },
+  about: {
+    downloadCv: 'Download CV (PDF)',
+    portraitAlt: 'Portrait of',
+    emptyTitle: 'Welcome.',
+    emptyText: 'This site is being prepared: biography and works will be here soon.',
+  },
   contact: {
     name: 'Name',
     email: 'Email',
