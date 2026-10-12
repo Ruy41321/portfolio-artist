@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import nodemailer from 'nodemailer'
 import {
   BoldFeature,
   FixedToolbarFeature,
@@ -112,14 +113,14 @@ export default buildConfig({
     ? nodemailerAdapter({
         defaultFromAddress: process.env.SMTP_FROM_ADDRESS || 'noreply@example.com',
         defaultFromName: process.env.SMTP_FROM_NAME || 'Portfolio',
-        transportOptions: {
+        transport: nodemailer.createTransport({
           host: process.env.SMTP_HOST,
           port: Number(process.env.SMTP_PORT || 587),
           secure: process.env.SMTP_SECURE === 'true',
           auth: process.env.SMTP_USER
             ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD }
             : undefined,
-        },
+        }),
       })
     : undefined,
   sharp,
