@@ -26,13 +26,30 @@ Piano esecutivo per portare il progetto da zero a **ready to publish**. È pensa
 
 ## 2. Layout scelto
 
-**Layout scelto: _DA DEFINIRE_** (A · Atelier / B · Editoriale / C · Notturno)
+**Layout scelto: D · Atelier Notturno** → riferimento: `design/drafts/d-atelier-notturno.html`
 
-Le bozze sono in `design/drafts/`. Per vederle: `python -m http.server 5500 --directory design/drafts`, poi apri http://localhost:5500.
+È il layout della bozza A (Atelier) con la palette scura della bozza C (Notturno). Specifiche concordate con l'utente:
 
-Quando l'utente sceglie:
-1. Sostituisci *DA DEFINIRE* con il layout scelto e le eventuali modifiche richieste (es. "B, ma con i filtri di A").
-2. Usa la bozza HTML come **riferimento visivo**: tipografia, spaziature, palette e interazioni vanno riprodotti fedelmente in componenti React. Non copiare l'HTML o il JS delle bozze così come sono.
+- **Pagina unica (one-page)** con le sezioni in quest'ordine: **Biografia → Opere → Contatti**.
+- **Sidebar fissa a sinistra** su desktop (su mobile diventa una barra in alto con menu a scomparsa):
+  - in alto: nome dell'artista con puntino accento, tagline
+  - menu: **Biografia, Opere, Contatti** (nessuna voce "Serie"); la voce attiva segue lo scroll
+  - in basso: selettore lingua IT/EN, link social, email, copyright
+- **Palette**:
+  - sfondo `#0e0e0f`, superfici `#161618` / `#1f1f22`, testo `#efece6`, testo secondario `#8d8a85`, linee `#2a2a2c`
+  - accento `#d7ff3a`, modificabile da SiteSettings
+  - font: Inter
+- **Biografia**: ritratto in bianco e nero, testo, CV con gli anni in colore accento, link facoltativo al CV in PDF.
+- **Opere**:
+  - **filtri per categoria** in alto ("Tutti" + le categorie gestite dall'admin, nell'ordine scelto dall'admin; una categoria senza opere pubblicate non compare)
+  - **selettore di vista Galleria / Schede**:
+    - *Galleria* = masonry con titolo e anno sotto l'immagine
+    - *Schede* = card con immagine 4:3, titolo e anno, tecnica · misure, descrizione breve, tag (categoria + disponibilità; "Disponibile" in accento e "Venduta" in rosso tenue)
+  - la vista predefinita si sceglie in SiteSettings; la scelta del visitatore viene ricordata
+- **Lightbox scuro** al click su un'opera, con navigazione da tastiera e swipe. Ogni opera ha anche una pagina propria `/[locale]/opere/[slug]`, usata per SEO e condivisione: il lightbox aggiorna l'URL e un link diretto apre la pagina dell'opera.
+- **Contatti**: testo introduttivo da Profile e form (nome, email, messaggio) con pulsante in colore accento.
+
+Usa la bozza HTML come **riferimento visivo**: tipografia, spaziature, palette e interazioni vanno riprodotti fedelmente in componenti React. Non copiare l'HTML o il JS delle bozze così come sono.
 
 ---
 
@@ -42,12 +59,12 @@ Quando l'utente sceglie:
 .
 ├── src/
 │   ├── app/
-│   │   ├── (frontend)/[locale]/      # sito pubblico: home, opere, opera/[slug], serie/[slug], bio, contatti
+│   │   ├── (frontend)/[locale]/      # sito pubblico: home one-page (bio, opere, contatti), opere/[slug], privacy
 │   │   ├── (payload)/admin/          # admin Payload (generato)
 │   │   ├── (payload)/api/            # REST/GraphQL Payload (generato)
 │   │   ├── sitemap.ts, robots.ts
 │   │   └── api/health/route.ts       # healthcheck per Docker
-│   ├── collections/                  # Users, Media, Artworks, Series, Categories, Messages
+│   ├── collections/                  # Users, Media, Artworks, Categories, Messages
 │   ├── globals/                      # Profile, SiteSettings
 │   ├── components/
 │   │   ├── admin/                    # dashboard custom, guide inline
@@ -74,12 +91,11 @@ Quando l'utente sceglie:
 - **Users**: solo admin, con auth Payload, `maxLoginAttempts` e `lockTime` attivi. Il primo utente si crea dalla schermata *create first user*.
 - **Media**: upload di immagini (jpg, png, webp, avif) e PDF (CV). `alt` è obbligatorio e localizzato. `imageSizes` sono `thumb`, `card`, `large` e `og` (1200×630). Il focal point è attivo e il limite dimensione è configurabile.
 - **Artworks** (Opere):
-  - Campi: `title`*, `slug` (auto dal titolo, unico), `images` (array di Media, la prima è la copertina), `year`, `technique`*, `dimensions`, `description` (rich text, campo semplice).
-  - Relazioni: `series` → Series, `categories` → Categories.
+  - Campi: `title`*, `slug` (auto dal titolo, unico), `images` (array di Media, la prima è la copertina), `year`, `technique`*, `dimensions`, `shortDescription`* (max ~160 caratteri, mostrata nella vista Schede), `description`* (rich text semplice, mostrata nella pagina dell'opera).
+  - Relazioni: `category` → Categories (una, obbligatoria).
   - Flag e stato: `featured` (bool), `availability` (disponibile / venduta / collezione privata / non in vendita), `price` (opzionale, mostrato solo se attivato in SiteSettings).
   - Opzioni collection: `versions.drafts` (bozza/pubblicato) e `orderable` (drag & drop per l'ordinamento).
-- **Series** (Serie/Progetti): `title`*, `slug`, `description`*, `cover`, `year`, `orderable`.
-- **Categories**: `name`*, `slug` (es. pittura, disegno, illustrazione).
+- **Categories**: `name`*, `slug`, con `orderable` per il drag & drop. Sono i filtri sopra le opere. L'artista può **aggiungerle, rinominarle, riordinarle ed eliminarle** dall'admin. Se elimina una categoria che ha opere, l'admin chiede conferma e le opere restano senza categoria: compaiono solo in "Tutti" e l'admin le segnala. Il seed crea Pittura, Illustrazione, Disegno e Grafica.
 - **Messages**: messaggi dal form contatti, di sola lettura per l'admin (`name`, `email`, `message`, `createdAt`, `read`).
 
 \* = campo localizzato (it/en)
@@ -90,13 +106,13 @@ Quando l'utente sceglie:
   - Tema: `theme` (select tra i temi disponibili), `accentColor`, `fontPairing` (select da lista curata).
   - Brand: `logo` e `favicon`.
   - SEO: `seo` (titolo*, descrizione*, immagine OG).
-  - Opzioni sito: `showPrices` e `enableContactForm`.
+  - Opzioni sito: `showPrices`, `enableContactForm` e `defaultWorksView` (galleria / schede).
   - Pagine legali: `privacy`* (rich text) e `analytics` (script facoltativo, es. Plausible; solo domain/URL, niente codice arbitrario).
 
 ### Principi
 - **Il frontend legge i dati solo tramite Payload Local API**, attraverso funzioni in `src/lib/` (`getArtworks`, `getProfile`…), mai con fetch HTTP verso sé stesso.
 - **Rendering statico + revalidation on-demand.** Hook `afterChange`/`afterDelete` su collections e globals chiamano `revalidateTag`/`revalidatePath`, così le pagine si aggiornano appena l'artista salva.
-- **Temi.** Un tema è una cartella in `src/themes/<nome>` che esporta lo stesso contratto (`Layout`, `HomePage`, `WorksPage`, `ArtworkPage`, `SeriesPage`, `AboutPage`, `ContactPage`). Le route sono sottili e delegano al tema attivo da SiteSettings. Colori e font arrivano come CSS custom properties.
+- **Temi.** Un tema è una cartella in `src/themes/<nome>` che esporta lo stesso contratto (`Layout`, `HomePage`, `WorksPage`, `ArtworkPage`, `AboutSection`, `WorksSection`, `ContactSection`). Le route sono sottili e delegano al tema attivo da SiteSettings. Colori e font arrivano come CSS custom properties.
 - **Generico.** Nessun nome, testo o immagine di un artista reale nel codice. Tutto arriva dal CMS o dal seed demo.
 
 ---
@@ -165,20 +181,20 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 ### M2 — Modello dati + localizzazione
 - [ ] Configura `localization` con `it` (default) ed `en` e fallback attivo
 - [ ] Imposta l'admin in italiano (`i18n.supportedLanguages` it + en, fallback it)
-- [ ] Crea le collections Users, Media, Artworks, Series, Categories e Messages come da §3
+- [ ] Crea le collections Users, Media, Artworks, Categories e Messages come da §3
 - [ ] Crea i globals Profile e SiteSettings come da §3
 - [ ] Configura l'access control: lettura pubblica solo per i documenti pubblicati; scrittura solo per gli utenti autenticati; Messages creabile dal pubblico solo tramite la server action del form
 - [ ] Genera i tipi con `payload generate:types` e crea la prima migrazione con `payload migrate:create initial`
-- [ ] Scrivi lo script di seed `pnpm seed`: profilo demo, 3 serie, 4 categorie e 12 opere con immagini segnaposto generate (es. con sharp, ispirate a `design/drafts/shared/placeholders.css`). Lo script deve essere idempotente.
-- [ ] Scrivi i test di integrazione (Vitest + Local API): creazione di un'opera, slug unico, opera in bozza non visibile al pubblico, campi localizzati
+- [ ] Scrivi lo script di seed `pnpm seed`: profilo demo, 4 categorie e 12 opere con immagini segnaposto generate (es. con sharp, ispirate a `design/drafts/shared/placeholders.css`). Lo script deve essere idempotente.
+- [ ] Scrivi i test di integrazione (Vitest + Local API): creazione di un'opera, slug unico, opera in bozza non visibile al pubblico, campi localizzati; categorie: rinomina riflessa nei filtri, categoria senza opere pubblicate esclusa dai filtri, eliminazione di una categoria con opere gestita senza errori
 
 **DoD:** il seed popola il DB; nell'admin si vedono tutte le sezioni in italiano; test verdi.
 
 ### M3 — Admin UX per artista non tecnico
 - [ ] Crea una dashboard custom con messaggio di benvenuto con il nome dell'artista e pulsanti grandi: *Aggiungi opera*, *Carica più immagini*, *Modifica profilo*, *Vedi il sito*, oltre al conteggio dei messaggi non letti
-- [ ] Organizza la navigazione admin in gruppi chiari (*Portfolio*: Opere, Serie, Categorie; *Il mio profilo*; *Messaggi*; *Impostazioni*) e nascondi ciò che non serve
+- [ ] Organizza la navigazione admin in gruppi chiari (*Portfolio*: Opere, Categorie; *Il mio profilo*; *Messaggi*; *Impostazioni*) e nascondi ciò che non serve
 - [ ] Abilita il bulk upload su Media e la creazione rapida di un'opera da un'immagine
-- [ ] Abilita il riordino drag & drop di opere e serie
+- [ ] Abilita il riordino drag & drop di opere e categorie; la gestione delle categorie (aggiungi, rinomina, elimina con conferma) deve essere semplice e guidata
 - [ ] Attiva la live preview / pulsante *Anteprima* verso la pagina pubblica dell'opera
 - [ ] Riduci il rich text a una toolbar minima (grassetto, corsivo, link, elenchi, titoli h2/h3)
 - [ ] Aggiungi validazioni con messaggi in italiano comprensibile (es. "Aggiungi almeno un'immagine dell'opera")
@@ -190,7 +206,9 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 - [ ] Crea il design system del tema: token CSS (colori, font, spaziature) da SiteSettings, font via `next/font`, reset
 - [ ] Implementa il contratto tema e il resolver del tema attivo (§3 Principi)
 - [ ] Componenti condivisi: `ArtImage` (`next/image` con sizes Payload, blur placeholder, alt), `Lightbox` accessibile (tastiera, focus trap, swipe su mobile), `LocaleSwitch`, `Nav`
-- [ ] Pagine: Home, Opere (con filtri per categoria/serie se previsti dal layout), Opera `[slug]`, Serie `[slug]`, Bio/About (con CV), Contatti
+- [ ] Home one-page (Biografia → Opere → Contatti) come da §2, con filtri per categoria, selettore Galleria/Schede e voce di menu attiva che segue lo scroll
+- [ ] Pagina opera `/[locale]/opere/[slug]` e lightbox che aggiorna l'URL
+- [ ] Pagina privacy
 - [ ] Routing i18n: `/it/...` e `/en/...`; la root fa redirect in base ad `Accept-Language`; `hreflang`; dizionario UI per le stringhe fisse
 - [ ] Revalidation on-demand tramite hook Payload
 - [ ] Pagine 404 e di errore curate, coerenti col tema
@@ -209,7 +227,7 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 
 ### M6 — Test e2e e qualità
 - [ ] Configura Playwright con un server su DB di test seedato
-- [ ] e2e pubblico: navigazione home → opera → lightbox, cambio lingua, form contatti
+- [ ] e2e pubblico: ordine delle sezioni Biografia → Opere → Contatti, filtro per categoria, cambio vista Galleria/Schede, lightbox e URL dell'opera, cambio lingua, form contatti
 - [ ] e2e admin: login, creazione opera con immagini, pubblicazione, verifica sul sito (scenario DoD di M3)
 - [ ] Test accessibilità con `@axe-core/playwright` sulle pagine principali (0 violazioni serious/critical)
 - [ ] Aggiungi gli e2e alla CI (job separato, artifact con trace in caso di fallimento)
@@ -237,7 +255,7 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
   - (a) server proprio con Docker dietro reverse proxy/TLS esistente, con esempi di config per nginx, Caddy e Traefik che puntano a `APP_PORT`
   - (b) Aruba: chiarisci che serve un prodotto con Docker (Cloud VPS / Cloud Server) e che l'hosting condiviso non supporta app Node/Docker
   - aggiornamenti, backup/restore, troubleshooting
-- [ ] `docs/GUIDA-ARTISTA.md`, in italiano semplice e con screenshot (Playwright): primo accesso, profilo, aggiungere/ordinare opere, serie, traduzioni EN, impostazioni, messaggi
+- [ ] `docs/GUIDA-ARTISTA.md`, in italiano semplice e con screenshot (Playwright): primo accesso, profilo, aggiungere/ordinare opere, gestire le categorie (filtri), traduzioni EN, impostazioni, messaggi
 - [ ] `docs/CUSTOMIZZAZIONE.md`: come creare un nuovo tema, aggiungere un campo, aggiungere una lingua
 
 **DoD:** una persona tecnica esterna riesce a fare il deploy seguendo solo i documenti.
@@ -257,6 +275,7 @@ Il progetto viene eseguito **in un'unica corsa autonoma, da M1 a M9, senza ferma
 **DoD — Ready to publish:** tutte le checkbox non (umano) di M1–M9 sono spuntate, la suite completa è verde e la PR finale è aperta.
 
 ### M10 — (Opzionale, post 1.0)
+- [ ] Serie/progetti (raggruppare le opere in serie con una pagina dedicata), se richiesto
 - [ ] Implementare le altre bozze come temi alternativi selezionabili da SiteSettings
 - [ ] Storage media su S3/R2 (`@payloadcms/storage-s3`)
 - [ ] Pagine libere (es. "Workshop", "Press") con un page builder a blocchi semplici

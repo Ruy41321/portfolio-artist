@@ -67,7 +67,9 @@
   .tags span.avail { color: var(--accent); background: rgba(215,255,58,.08); }
   .tags span.sold { color: #ff8a7a; background: rgba(255,138,122,.08); }
 
-  section.page { max-width: 760px; padding-top: 96px; }
+  section.page { max-width: 760px; padding-top: 96px; scroll-margin-top: 24px; }
+  main > section.page:first-child { padding-top: 0; }
+  section.page.wide { max-width: none; }
   section.page h2 { font-weight: 400; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 28px; }
   .about { display: grid; grid-template-columns: 220px 1fr; gap: 40px; align-items: start; }
   .about .portrait { aspect-ratio: 3/4; filter: grayscale(1) contrast(1.05) brightness(.9); }
@@ -101,9 +103,8 @@
   </div>
   <button class="burger" onclick="document.querySelector('nav').classList.toggle('show')">Menu</button>
   <nav>
-    <a href="#works" class="active">Lavori</a>
-    <a href="#works">Serie</a>
-    <a href="#about">Biografia</a>
+    <a href="#about" class="active">Biografia</a>
+    <a href="#works">Opere</a>
     <a href="#contact">Contatti</a>
   </nav>
   <div class="side-foot">
@@ -115,17 +116,6 @@
 </aside>
 
 <main>
-  <div id="works">
-    <div class="toolbar">
-      <div class="filters" id="filters"></div>
-      <div class="toggle" id="toggle">
-        <button data-v="masonry" class="on" title="Galleria"><svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="9"/><rect x="9" y="1" width="6" height="5"/><rect x="1" y="12" width="6" height="3"/><rect x="9" y="8" width="6" height="7"/></svg><span class="lbl">Galleria</span></button>
-        <button data-v="cards" title="Schede"><svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="4"/><rect x="1" y="6" width="6" height="2"/><rect x="9" y="1" width="6" height="4"/><rect x="9" y="6" width="6" height="2"/><rect x="1" y="10" width="6" height="4"/><rect x="9" y="10" width="6" height="4"/></svg><span class="lbl">Schede</span></button>
-      </div>
-    </div>
-    <div id="grid"></div>
-  </div>
-
   <section class="page" id="about">
     <h2>Biografia</h2>
     <div class="about">
@@ -140,6 +130,18 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <section class="page wide" id="works">
+    <h2>Opere</h2>
+    <div class="toolbar">
+      <div class="filters" id="filters"></div>
+      <div class="toggle" id="toggle">
+        <button data-v="masonry" class="on" title="Galleria"><svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="9"/><rect x="9" y="1" width="6" height="5"/><rect x="1" y="12" width="6" height="3"/><rect x="9" y="8" width="6" height="7"/></svg><span class="lbl">Galleria</span></button>
+        <button data-v="cards" title="Schede"><svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="4"/><rect x="1" y="6" width="6" height="2"/><rect x="9" y="1" width="6" height="4"/><rect x="9" y="6" width="6" height="2"/><rect x="1" y="10" width="6" height="4"/><rect x="9" y="10" width="6" height="4"/></svg><span class="lbl">Schede</span></button>
+      </div>
+    </div>
+    <div id="grid"></div>
   </section>
 
   <section class="page" id="contact">
@@ -192,7 +194,7 @@
           <div class="body">
             <h3>${w.title}<span>${w.year}</span></h3>
             <p>${w.tech}${w.size !== "—" ? " · " + w.size : ""}. ${DESC[w.series]}</p>
-            <div class="tags"><span>${w.cat[0].toUpperCase() + w.cat.slice(1)}</span><span>Serie: ${w.series}</span><span class="${AVAIL[w.i] === "private" ? "" : AVAIL[w.i]}">${AVAIL_LBL[AVAIL[w.i]]}</span></div>
+            <div class="tags"><span>${w.cat[0].toUpperCase() + w.cat.slice(1)}</span><span class="${AVAIL[w.i] === "private" ? "" : AVAIL[w.i]}">${AVAIL_LBL[AVAIL[w.i]]}</span></div>
           </div>
         </article>`).join("");
     filters.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.c === cat));
@@ -202,6 +204,13 @@
   filters.onclick = e => { if (e.target.dataset.c) { cat = e.target.dataset.c; draw(); } };
   document.getElementById("toggle").onclick = e => { const b = e.target.closest("button"); if (b) { view = b.dataset.v; draw(); } };
   draw();
+
+  // Voce di menu attiva = sezione visibile
+  const links = [...document.querySelectorAll("nav a")];
+  const spy = new IntersectionObserver(entries => entries.forEach(e => {
+    if (e.isIntersecting) links.forEach(a => a.classList.toggle("active", a.hash === "#" + e.target.id));
+  }), { rootMargin: "-40% 0px -55% 0px" });
+  ["about", "works", "contact"].forEach(id => spy.observe(document.getElementById(id)));
 </script>
 </body>
 </html>

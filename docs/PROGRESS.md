@@ -8,5 +8,6 @@ Diario delle sessioni di lavoro, dalla più recente in alto. Ogni sessione aggiu
 - Repo inizializzata e pubblicata su GitHub come repo privata.
 - Prese le decisioni di stack: Next.js + Payload 3, Postgres, pnpm, un artista per istanza, IT+EN, Docker (vedi `PLAN.md` §1).
 - Create tre bozze di layout in `design/drafts/`: A Atelier, B Editoriale, C Notturno.
-- **Prossimo passo:** l'utente sceglie il layout (va annotato in `PLAN.md` §2); poi parte l'autopilota da M1.
+- **Prossimo passo:** avviare l'autopilota da M1.
 - Aggiornamento: rimosso Caddy/HTTPS (il TLS è gestito dall'host o dal reverse proxy esistente) e introdotta la modalità autopilota (PLAN §4) con lo Stop hook.
+- Layout scelto: **D · Atelier Notturno** (A + palette di C). Pagina unica Biografia → Opere → Contatti; tolte le Serie (spostate in M10); categorie/filtri gestibili dall'admin; vista Galleria/Schede. Dettagli in `PLAN.md` §2.
