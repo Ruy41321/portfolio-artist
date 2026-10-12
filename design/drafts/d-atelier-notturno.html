@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bozza D — Atelier Notturno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/placeholders.css">
+<style>
+  /* Layout di A (Atelier) + palette di C (Notturno) */
+  :root {
+    --bg: #0e0e0f; --surface: #161618; --surface-2: #1f1f22; --fg: #efece6; --muted: #8d8a85; --line: #2a2a2c; --accent: #d7ff3a;
+    --side: 280px; --lb-bg: rgba(14,14,15,.97); --lb-fg: #efece6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 300 15px/1.6 Inter, system-ui, sans-serif; }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--accent); color: #000; }
+
+  aside { position: fixed; inset: 0 auto 0 0; width: var(--side); padding: 48px 40px; display: flex; flex-direction: column; border-right: 1px solid var(--line); background: var(--bg); z-index: 10; }
+  .name { font-size: 1.35rem; font-weight: 500; letter-spacing: -.01em; line-height: 1.2; }
+  .name .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 10px; vertical-align: middle; }
+  .tag { color: var(--muted); font-size: .85rem; margin-top: 6px; }
+  nav { margin-top: 56px; display: grid; gap: 10px; }
+  nav a { color: var(--muted); transition: color .2s; }
+  nav a:hover, nav a.active { color: var(--fg); }
+  nav a.active::before { content: "— "; color: var(--accent); }
+  .side-foot { margin-top: auto; font-size: .8rem; color: var(--muted); display: grid; gap: 6px; }
+  .side-foot a:hover { color: var(--accent); }
+  .lang button { background: none; border: 0; padding: 0; font: inherit; color: var(--muted); cursor: pointer; }
+  .lang button.on { color: var(--fg); font-weight: 500; }
+
+  main { margin-left: var(--side); padding: 48px 56px 96px; }
+  .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 36px; }
+  .filters { display: flex; gap: 22px; flex-wrap: wrap; font-size: .9rem; }
+  .filters button { background: none; border: 0; padding: 0 0 4px; font: inherit; color: var(--muted); cursor: pointer; border-bottom: 1px solid transparent; }
+  .filters button:hover { color: var(--fg); }
+  .filters button.on { color: var(--fg); border-color: var(--accent); }
+  .toggle { display: flex; gap: 4px; border: 1px solid var(--line); border-radius: 999px; padding: 4px; font-size: .85rem; }
+  .toggle button { background: none; border: 0; color: var(--muted); font: inherit; padding: 6px 16px; border-radius: 999px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .toggle button.on { background: var(--fg); color: var(--bg); }
+  .toggle svg { width: 14px; height: 14px; }
+
+  /* Vista galleria (masonry, da A) */
+  .masonry { columns: 3 280px; column-gap: 28px; }
+  .masonry .card { break-inside: avoid; margin: 0 0 36px; cursor: zoom-in; }
+  .masonry .art { width: 100%; transition: opacity .3s; }
+  .masonry .card:hover .art { opacity: .85; }
+  .masonry .cap { display: flex; justify-content: space-between; margin-top: 10px; font-size: .85rem; }
+  .masonry .cap span:last-child { color: var(--muted); }
+  .masonry .card:hover .cap span:first-child { color: var(--accent); }
+
+  /* Vista schede (come la pagina di confronto delle bozze) */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+  .cards .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; cursor: zoom-in; transition: transform .2s, border-color .2s, box-shadow .2s; }
+  .cards .card:hover { transform: translateY(-3px); border-color: #3a3a3d; box-shadow: 0 14px 34px rgba(0,0,0,.45); }
+  .cards .thumb { aspect-ratio: 4/3; }
+  .cards .body { padding: 18px 20px 22px; }
+  .cards h3 { margin: 0 0 6px; font-size: 1.1rem; font-weight: 500; display: flex; justify-content: space-between; gap: 12px; }
+  .cards h3 span { color: var(--muted); font-weight: 400; font-size: .9rem; }
+  .cards .card:hover h3 { color: var(--accent); }
+  .cards .card:hover h3 span { color: var(--muted); }
+  .cards p { margin: 0; color: var(--muted); font-size: .9rem; }
+  .tags { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .tags span { font-size: .75rem; padding: 3px 10px; border-radius: 999px; background: var(--surface-2); color: #b9b5ae; }
+  .tags span.avail { color: var(--accent); background: rgba(215,255,58,.08); }
+  .tags span.sold { color: #ff8a7a; background: rgba(255,138,122,.08); }
+
+  section.page { max-width: 760px; padding-top: 96px; }
+  section.page h2 { font-weight: 400; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 28px; }
+  .about { display: grid; grid-template-columns: 220px 1fr; gap: 40px; align-items: start; }
+  .about .portrait { aspect-ratio: 3/4; filter: grayscale(1) contrast(1.05) brightness(.9); }
+  .about p { font-size: 1.05rem; margin-top: 0; }
+  .cv { margin-top: 40px; display: grid; grid-template-columns: 70px 1fr; gap: 8px 20px; font-size: .9rem; }
+  .cv b { font-weight: 500; color: var(--accent); }
+  form { display: grid; gap: 14px; max-width: 520px; }
+  input, textarea { font: inherit; padding: 12px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--fg); outline: none; }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  .btn { justify-self: start; margin-top: 10px; padding: 12px 28px; background: var(--accent); color: #000; border: 0; border-radius: 999px; font: inherit; font-weight: 500; cursor: pointer; }
+
+  .burger { display: none; }
+  @media (max-width: 900px) {
+    aside { position: sticky; top: 0; width: auto; height: auto; padding: 18px 20px; flex-direction: row; align-items: center; justify-content: space-between; border-right: 0; border-bottom: 1px solid var(--line); }
+    .tag, .side-foot { display: none; }
+    nav { display: none; }
+    nav.show { display: grid; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg); padding: 20px; border-bottom: 1px solid var(--line); margin: 0; }
+    .burger { display: block; background: none; border: 0; color: var(--fg); font: inherit; cursor: pointer; }
+    main { margin: 0; padding: 24px 20px 72px; }
+    .about { grid-template-columns: 1fr; }
+    .toggle button .lbl { display: none; }
+  }
+</style>
+</head>
+<body>
+<aside>
+  <div>
+    <a href="#" class="name"><span class="dot"></span><span id="name"></span></a>
+    <div class="tag" id="tag"></div>
+  </div>
+  <button class="burger" onclick="document.querySelector('nav').classList.toggle('show')">Menu</button>
+  <nav>
+    <a href="#works" class="active">Lavori</a>
+    <a href="#works">Serie</a>
+    <a href="#about">Biografia</a>
+    <a href="#contact">Contatti</a>
+  </nav>
+  <div class="side-foot">
+    <div class="lang"><button class="on">IT</button> / <button>EN</button></div>
+    <a href="#">Instagram</a>
+    <a href="#">studio@example.com</a>
+    <span>© 2026</span>
+  </div>
+</aside>
+
+<main>
+  <div id="works">
+    <div class="toolbar">
+      <div class="filters" id="filters"></div>
+      <div class="toggle" id="toggle">
+        <button data-v="masonry" class="on" title="Galleria"><svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="9"/><rect x="9" y="1" width="6" height="5"/><rect x="1" y="12" width="6" height="3"/><rect x="9" y="8" width="6" height="7"/></svg><span class="lbl">Galleria</span></button>
+        <button data-v="cards" title="Schede"><svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="4"/><rect x="1" y="6" width="6" height="2"/><rect x="9" y="1" width="6" height="4"/><rect x="9" y="6" width="6" height="2"/><rect x="1" y="10" width="6" height="4"/><rect x="9" y="10" width="6" height="4"/></svg><span class="lbl">Schede</span></button>
+      </div>
+    </div>
+    <div id="grid"></div>
+  </div>
+
+  <section class="page" id="about">
+    <h2>Biografia</h2>
+    <div class="about">
+      <div class="art portrait"></div>
+      <div>
+        <p id="bio"></p>
+        <div class="cv">
+          <b>2025</b><span>“Acque”, personale — Galleria Esempio, Milano</span>
+          <b>2024</b><span>Premio Arti Visive, finalista — Torino</span>
+          <b>2023</b><span>“Bussole”, collettiva — Spazio Nove, Bologna</span>
+          <b>2021</b><span>Diploma in Pittura — Accademia di Brera</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="contact">
+    <h2>Contatti</h2>
+    <p style="max-width:520px">Per commissioni, disponibilità delle opere o collaborazioni scrivimi qui.</p>
+    <form onsubmit="event.preventDefault(); this.querySelector('.btn').textContent='Inviato ✓'">
+      <input placeholder="Nome" required>
+      <input placeholder="Email" type="email" required>
+      <textarea rows="4" placeholder="Messaggio" required></textarea>
+      <button class="btn">Invia</button>
+    </form>
+  </section>
+</main>
+
+<a class="draft-badge" style="background:var(--accent);color:#000" href="index.html">Bozza D · Atelier Notturno ↩</a>
+<script src="shared/data.js"></script>
+<script>
+  document.getElementById("name").textContent = ARTIST.name;
+  document.getElementById("tag").textContent = ARTIST.tagline.it;
+  document.getElementById("bio").textContent = ARTIST.bio.it;
+
+  // Descrizione breve e disponibilità: nel prodotto finale arrivano dal CMS.
+  const DESC = {
+    Acque: "Dalla serie sul colore dell'acqua nelle prime ore del giorno.",
+    Terre: "Paesaggio ridotto a fasce di colore e luce.",
+    Bussole: "Geometrie che orientano: movimento e direzione.",
+    Bandiere: "Ritmi e campiture piatte, tra segno e simbolo.",
+    Sogni: "Illustrazione digitale nata di notte, tra visione e diario.",
+  };
+  const AVAIL = ["avail", "sold", "avail", "private", "avail", "sold", "avail", "avail", "private", "avail", "sold", "avail"];
+  const AVAIL_LBL = { avail: "Disponibile", sold: "Venduta", private: "Collezione privata" };
+
+  const cats = ["tutti", ...new Set(WORKS.map(w => w.cat))];
+  const filters = document.getElementById("filters");
+  const grid = document.getElementById("grid");
+  let cat = "tutti", view = "masonry";
+
+  function draw() {
+    const list = WORKS.map((w, i) => ({ ...w, i })).filter(w => cat === "tutti" || w.cat === cat);
+    grid.className = view;
+    grid.innerHTML = view === "masonry"
+      ? list.map(w => `
+        <figure class="card" onclick="Lightbox.open(${w.i})">
+          <div class="art ${w.art} ${w.ratio}"></div>
+          <figcaption class="cap"><span>${w.title}</span><span>${w.year}</span></figcaption>
+        </figure>`).join("")
+      : list.map(w => `
+        <article class="card" onclick="Lightbox.open(${w.i})">
+          <div class="thumb art ${w.art}"></div>
+          <div class="body">
+            <h3>${w.title}<span>${w.year}</span></h3>
+            <p>${w.tech}${w.size !== "—" ? " · " + w.size : ""}. ${DESC[w.series]}</p>
+            <div class="tags"><span>${w.cat[0].toUpperCase() + w.cat.slice(1)}</span><span>Serie: ${w.series}</span><span class="${AVAIL[w.i] === "private" ? "" : AVAIL[w.i]}">${AVAIL_LBL[AVAIL[w.i]]}</span></div>
+          </div>
+        </article>`).join("");
+    filters.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.c === cat));
+    document.querySelectorAll("#toggle button").forEach(b => b.classList.toggle("on", b.dataset.v === view));
+  }
+  filters.innerHTML = cats.map(c => `<button data-c="${c}">${c[0].toUpperCase() + c.slice(1)}</button>`).join("");
+  filters.onclick = e => { if (e.target.dataset.c) { cat = e.target.dataset.c; draw(); } };
+  document.getElementById("toggle").onclick = e => { const b = e.target.closest("button"); if (b) { view = b.dataset.v; draw(); } };
+  draw();
+</script>
+</body>
+</html>
