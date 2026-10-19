@@ -45,9 +45,9 @@
     "zod": "^4.6.6"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.13.0",
-    "@playwright/test": "1.56.1",
-    "@testing-library/react": "16.3.0",
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "1.64.1",
+    "@testing-library/react": "16.3.3",
     "@types/node": "24.19.2",
     "@types/pg": "^8.23.1",
     "@types/react": "19.2.14",
@@ -61,7 +61,7 @@
     "prettier": "^3.4.2",
     "tsx": "4.23.15",
     "typescript": "5.7.3",
-    "vite-tsconfig-paths": "6.0.5",
+    "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.1.11"
   },
   "engines": {
